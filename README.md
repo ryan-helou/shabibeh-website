@@ -4,36 +4,57 @@ Anonymous question submission platform for AEBC church.
 
 ## Quick Start
 
+1. Install dependencies:
 ```bash
 npm install
+```
+
+2. Create a `.env` file (or export these variables):
+```
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=your-service-role-key
+ADMIN_PASSWORD=your-admin-password
+```
+
+3. Create the `questions` table in your Supabase dashboard (SQL Editor):
+```sql
+CREATE TABLE questions (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  question_text TEXT NOT NULL,
+  answered BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+```
+
+4. Start the server:
+```bash
 npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000).
 
 ## Admin Access
 
-- Click the small **Admin** link in the bottom-right corner of the homepage.
-- Default password: `aebc2024` (change this in `server.js` or set the `ADMIN_PASSWORD` environment variable).
+Click the **Admin** button in the bottom-right corner. Default password: `aebc2024`.
 
 ## Deploy to Vercel
 
 1. Push this repo to GitHub.
 2. Import it in [vercel.com](https://vercel.com).
-3. Set the environment variable `ADMIN_PASSWORD` in Vercel project settings.
+3. Set environment variables in Vercel project settings:
+   - `SUPABASE_URL`
+   - `SUPABASE_KEY`
+   - `ADMIN_PASSWORD`
 4. Deploy.
-
-> **Note:** SQLite stores data in a local file (`data/questions.db`). On Vercel's serverless platform, this storage is **ephemeral** — data may be lost between deployments or cold starts. For persistent production use, swap SQLite for a cloud database (e.g., Turso, PlanetScale, or Supabase). For a single church session, ephemeral storage works fine.
 
 ## Project Structure
 
 ```
 public/
-  index.html      User-facing submission page
-  admin.html      Admin dashboard
-  css/style.css   Styles
-  js/app.js       User submission logic
-  js/admin.js     Admin dashboard logic
-server.js         Express server + API routes
-data/             SQLite database (auto-created)
+  index.html        User-facing submission page
+  admin.html        Admin dashboard
+  css/style.css     Styles
+  js/app.js         User submission logic
+  js/admin.js       Admin dashboard logic
+server.js           Express server + API routes (Supabase)
 ```

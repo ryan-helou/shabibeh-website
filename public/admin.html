@@ -30,8 +30,11 @@
     <!-- Admin dashboard (hidden until authenticated) -->
     <main id="dashboard-view" class="hidden">
       <div class="dashboard-header">
-        <h2>Submitted Questions</h2>
-        <button id="refresh-btn" class="secondary-btn">Refresh</button>
+        <h2 id="view-title">Submitted Questions</h2>
+        <div class="dashboard-actions">
+          <button id="answered-view-btn" class="secondary-btn">Answered Questions</button>
+          <button id="refresh-btn" class="secondary-btn">Refresh</button>
+        </div>
       </div>
       <div id="questions-list">
         <!-- Questions will be inserted here by JS -->
@@ -40,8 +43,19 @@
     </main>
   </div>
 
+  <!-- Custom delete confirmation modal -->
+  <div id="delete-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <p>Delete this question?</p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="secondary-btn">Cancel</button>
+        <button id="modal-confirm" class="delete-confirm-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Link back to homepage -->
-  <a href="/" class="admin-link">Home</a>
+  <a href="/" class="admin-btn">Home</a>
 
   <script src="/js/admin.js"></script>
 </body>

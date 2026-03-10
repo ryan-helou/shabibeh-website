@@ -1,11 +1,12 @@
 // ============================================================
 // AnonAEBC - Anonymous Question Submission Server
-// Main Express server for local development and production
+// Main Express server using Supabase for persistent storage
 // ============================================================
 
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
-const Database = require('better-sqlite3');
+const { createClient } = require('@supabase/supabase-js');
 const rateLimit = require('express-rate-limit');
 
 const app = express();
@@ -14,22 +15,16 @@ const PORT = process.env.PORT || 3000;
 // ----- Admin Password (change this before deploying!) -----
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'aebc2024';
 
-// ----- Database Setup -----
-// Store the database in the data/ directory
-const dbPath = path.join(__dirname, 'data', 'questions.db');
-const db = new Database(dbPath);
+// ----- Supabase Setup -----
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY; // Use the service_role key for server-side
 
-// Enable WAL mode for better concurrent performance
-db.pragma('journal_mode = WAL');
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('Missing SUPABASE_URL or SUPABASE_KEY environment variables.');
+  process.exit(1);
+}
 
-// Create the questions table if it doesn't exist
-db.exec(`
-  CREATE TABLE IF NOT EXISTS questions (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    question_text TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`);
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ----- Middleware -----
 app.use(express.json());
@@ -48,7 +43,7 @@ const submitLimiter = rateLimit({
 // ----- API Routes -----
 
 // POST /api/questions - Submit a new anonymous question
-app.post('/api/questions', submitLimiter, (req, res) => {
+app.post('/api/questions', submitLimiter, async (req, res) => {
   const { question_text } = req.body;
 
   // Validate: question must exist
@@ -65,9 +60,15 @@ app.post('/api/questions', submitLimiter, (req, res) => {
     return res.status(400).json({ error: 'Question must be 500 characters or less.' });
   }
 
-  // Insert into database (no IP or user data stored)
-  const stmt = db.prepare('INSERT INTO questions (question_text) VALUES (?)');
-  stmt.run(trimmed);
+  // Insert into Supabase (no IP or user data stored)
+  const { error } = await supabase
+    .from('questions')
+    .insert({ question_text: trimmed });
+
+  if (error) {
+    console.error('Supabase insert error:', error);
+    return res.status(500).json({ error: 'Failed to submit question.' });
+  }
 
   res.status(201).json({ success: true, message: 'Question submitted successfully.' });
 });
@@ -83,21 +84,85 @@ app.post('/api/admin/login', (req, res) => {
   }
 });
 
-// GET /api/admin/questions - Fetch all questions (admin only)
-app.get('/api/admin/questions', (req, res) => {
+// GET /api/admin/questions - Fetch questions (admin only)
+// Query param ?answered=1 to get answered questions, default is unanswered
+app.get('/api/admin/questions', async (req, res) => {
   const password = req.headers['x-admin-password'];
 
   if (password !== ADMIN_PASSWORD) {
     return res.status(401).json({ error: 'Unauthorized.' });
   }
 
-  // Return questions in reverse chronological order (newest first)
-  const questions = db.prepare('SELECT * FROM questions ORDER BY timestamp DESC').all();
-  res.json({ questions });
+  const answered = req.query.answered === '1';
+
+  const { data, error } = await supabase
+    .from('questions')
+    .select('*')
+    .eq('answered', answered)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('Supabase select error:', error);
+    return res.status(500).json({ error: 'Failed to fetch questions.' });
+  }
+
+  res.json({ questions: data });
+});
+
+// PUT /api/admin/questions/answer - Mark questions as answered (admin only)
+app.put('/api/admin/questions/answer', async (req, res) => {
+  const password = req.headers['x-admin-password'];
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized.' });
+  }
+
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No question IDs provided.' });
+  }
+
+  const { error } = await supabase
+    .from('questions')
+    .update({ answered: true })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Supabase update error:', error);
+    return res.status(500).json({ error: 'Failed to update questions.' });
+  }
+
+  res.json({ success: true, message: `${ids.length} question(s) marked as answered.` });
+});
+
+// PUT /api/admin/questions/unanswer - Mark questions as unanswered (admin only)
+app.put('/api/admin/questions/unanswer', async (req, res) => {
+  const password = req.headers['x-admin-password'];
+
+  if (password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Unauthorized.' });
+  }
+
+  const { ids } = req.body;
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ error: 'No question IDs provided.' });
+  }
+
+  const { error } = await supabase
+    .from('questions')
+    .update({ answered: false })
+    .in('id', ids);
+
+  if (error) {
+    console.error('Supabase update error:', error);
+    return res.status(500).json({ error: 'Failed to update questions.' });
+  }
+
+  res.json({ success: true, message: `${ids.length} question(s) marked as unanswered.` });
 });
 
 // DELETE /api/admin/questions/:id - Delete a question (admin only)
-app.delete('/api/admin/questions/:id', (req, res) => {
+app.delete('/api/admin/questions/:id', async (req, res) => {
   const password = req.headers['x-admin-password'];
 
   if (password !== ADMIN_PASSWORD) {
@@ -105,10 +170,15 @@ app.delete('/api/admin/questions/:id', (req, res) => {
   }
 
   const { id } = req.params;
-  const result = db.prepare('DELETE FROM questions WHERE id = ?').run(id);
 
-  if (result.changes === 0) {
-    return res.status(404).json({ error: 'Question not found.' });
+  const { error, count } = await supabase
+    .from('questions')
+    .delete()
+    .eq('id', id);
+
+  if (error) {
+    console.error('Supabase delete error:', error);
+    return res.status(500).json({ error: 'Failed to delete question.' });
   }
 
   res.json({ success: true, message: 'Question deleted.' });
