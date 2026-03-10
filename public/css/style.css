@@ -128,13 +128,6 @@ button:disabled {
   color: #fff;
 }
 
-/* ----- Disclaimer ----- */
-.disclaimer {
-  text-align: center;
-  font-size: 0.8rem;
-  color: #888;
-  margin-top: 0.75rem;
-}
 
 /* ----- Success Message ----- */
 .success-message {
@@ -167,19 +160,24 @@ button:disabled {
   text-align: center;
 }
 
-/* ----- Admin Link ----- */
-.admin-link {
+/* ----- Admin Button (bottom corner) ----- */
+.admin-btn {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  font-size: 0.75rem;
-  color: #aaa;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16213e;
+  background-color: #e8e8ed;
   text-decoration: none;
-  transition: color 0.2s;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  font-family: inherit;
 }
 
-.admin-link:hover {
-  color: #16213e;
+.admin-btn:hover {
+  background-color: #d0d0d8;
 }
 
 /* ----- Dashboard ----- */
@@ -188,6 +186,8 @@ button:disabled {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .dashboard-header h2 {
@@ -195,10 +195,15 @@ button:disabled {
   color: #16213e;
 }
 
-.dashboard-header .secondary-btn {
+.dashboard-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.dashboard-actions .secondary-btn {
   width: auto;
-  padding: 0.4rem 1rem;
-  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
 }
 
 /* Question card in admin dashboard */
@@ -234,15 +239,100 @@ button:disabled {
   color: #999;
 }
 
+/* Action buttons row */
+.question-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.question-card .check-btn,
 .question-card .delete-btn {
-  width: auto;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.8rem;
-  background-color: #c0392b;
-  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
+.question-card .check-btn {
+  background-color: #e8e8ed;
+  color: #16213e;
+}
+
+.question-card .check-btn:hover {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+/* When viewing answered questions, show checkmark as green */
+.question-card .check-btn.checked {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.question-card .check-btn.checked:hover {
+  background-color: #e8e8ed;
+  color: #16213e;
+}
+
+.question-card .delete-btn {
+  background-color: #fdecea;
+  color: #c0392b;
 }
 
 .question-card .delete-btn:hover {
+  background-color: #c0392b;
+  color: #fff;
+}
+
+/* ----- Delete Confirmation Modal ----- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.75rem 1.5rem;
+  width: 90%;
+  max-width: 340px;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal p {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  margin-bottom: 1.25rem;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 0.65rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.delete-confirm-btn {
+  background-color: #c0392b;
+}
+
+.delete-confirm-btn:hover {
   background-color: #a93226;
 }
 
