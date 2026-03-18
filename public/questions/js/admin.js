@@ -1,11 +1,8 @@
 // ============================================================
-// AnonAEBC - Admin Dashboard JavaScript
-// Handles admin login, question viewing grouped by IP,
-// checkmark toggle for answered/unanswered, and delete
+// Shabibeh - Anonymous Questions Admin
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ----- DOM Elements -----
   const loginForm = document.getElementById('login-form');
   const passwordInput = document.getElementById('password-input');
   const loginError = document.getElementById('login-error');
@@ -17,7 +14,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewTitle = document.getElementById('view-title');
   const answeredViewBtn = document.getElementById('answered-view-btn');
 
-  // Modal elements
   const deleteModal = document.getElementById('delete-modal');
   const modalCancel = document.getElementById('modal-cancel');
   const modalConfirm = document.getElementById('modal-confirm');
@@ -34,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = passwordInput.value;
 
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch('/api/questions/admin/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ password }),
@@ -55,10 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // ----- Refresh -----
   refreshBtn.addEventListener('click', loadQuestions);
 
-  // ----- Toggle Answered / Unanswered View -----
   answeredViewBtn.addEventListener('click', () => {
     viewingAnswered = !viewingAnswered;
 
@@ -94,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteModal.classList.add('hidden');
 
     try {
-      const res = await fetch(`/api/admin/questions/${id}`, {
+      const res = await fetch(`/api/questions/admin/${id}`, {
         method: 'DELETE',
         headers: { 'X-Admin-Password': adminPassword },
       });
@@ -112,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const param = viewingAnswered ? '?answered=1' : '';
 
     try {
-      const res = await fetch(`/api/admin/questions${param}`, {
+      const res = await fetch(`/api/questions/admin/list${param}`, {
         headers: { 'X-Admin-Password': adminPassword },
       });
 
@@ -142,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     noQuestions.classList.add('hidden');
 
-    // Group by IP address
     const groups = new Map();
     questions.forEach(q => {
       const ip = q.ip_address || 'Unknown';
@@ -150,7 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
       groups.get(ip).push(q);
     });
 
-    // Sort groups: most questions first
     const sortedGroups = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
 
     sortedGroups.forEach(([ip, groupQuestions]) => {
@@ -199,8 +191,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----- Toggle Answered/Unanswered -----
   async function toggleAnswered(id) {
     const endpoint = viewingAnswered
-      ? '/api/admin/questions/unanswer'
-      : '/api/admin/questions/answer';
+      ? '/api/questions/admin/unanswer'
+      : '/api/questions/admin/answer';
 
     try {
       const res = await fetch(endpoint, {
@@ -218,29 +210,5 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {
       // Silently fail
     }
-  }
-
-  // ----- Escape HTML to prevent XSS -----
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  function timeAgo(dateString) {
-    const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
-    if (seconds < 60) return 'just now';
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 5) return `${weeks}w ago`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}mo ago`;
-    const years = Math.floor(days / 365);
-    return `${years}y ago`;
   }
 });

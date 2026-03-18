@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AEBC Shabibeh Anonymous Questions - Admin Dashboard</title>
+  <title>Questions Admin - Shabibeh</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>AEBC Shabibeh Anonymous Questions</h1>
+      <h1>Anonymous Questions</h1>
       <p class="subtitle">Admin Dashboard</p>
     </header>
 
@@ -36,9 +36,7 @@
           <button id="refresh-btn" class="secondary-btn">Refresh</button>
         </div>
       </div>
-      <div id="questions-list">
-        <!-- Questions will be inserted here by JS -->
-      </div>
+      <div id="questions-list"></div>
       <p id="no-questions" class="hidden muted">No questions yet.</p>
     </main>
   </div>
@@ -54,9 +52,9 @@
     </div>
   </div>
 
-  <!-- Link back to homepage -->
-  <a href="/" class="admin-btn">Home</a>
+  <a href="/questions" class="admin-btn">Back</a>
 
-  <script src="/js/admin.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/questions/js/admin.js"></script>
 </body>
 </html>

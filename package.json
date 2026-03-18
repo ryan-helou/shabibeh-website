@@ -1,7 +1,7 @@
 {
-  "name": "anonaebc",
+  "name": "shabibeh-website",
   "version": "1.0.0",
-  "description": "Anonymous question submission platform for AEBC church",
+  "description": "Shabibeh - AEBC Youth website",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,6 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.47.0",
     "dotenv": "^17.3.1",
-    "express": "^4.21.0",
-    "express-rate-limit": "^7.4.0"
+    "express": "^4.21.0"
   }
 }

@@ -3,57 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AEBC Shabibeh Anonymous Questions</title>
+  <title>Shabibeh</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Main heading -->
+  <div class="container home-container">
     <header>
-      <h1>AEBC Shabibeh Anonymous Questions</h1>
-      <p class="subtitle">Submit your question anonymously</p>
+      <h1>Shabibeh</h1>
+      <p class="subtitle">AEBC Youth</p>
     </header>
 
-    <!-- Question submission form -->
-    <main id="form-view">
-      <form id="question-form">
-        <textarea
-          id="question-input"
-          placeholder="Ask your question..."
-          maxlength="500"
-          rows="4"
-          required
-        ></textarea>
-        <div class="char-count">
-          <span id="char-counter">0</span>/500
-        </div>
-        <button type="submit" id="submit-btn">Submit Question</button>
-      </form>
-    </main>
-
-    <!-- Success message (hidden by default) -->
-    <main id="success-view" class="hidden">
-      <div class="success-message">
-        <span class="checkmark">&#10004;</span>
-        <p>Good job, you submitted!</p>
-        <button id="another-btn" class="secondary-btn">Ask another question</button>
-      </div>
-
-    </main>
-
-    <!-- Error message area -->
-    <div id="error-message" class="error hidden"></div>
-
-    <!-- User's submitted questions (always shown if they have past questions) -->
-    <div id="my-questions" class="hidden">
-      <h2 class="my-questions-heading">Your Submitted Questions</h2>
-      <div id="my-questions-list"></div>
-    </div>
+    <nav class="home-nav">
+      <a href="/questions" class="nav-card">
+        <span class="nav-icon">&#10067;</span>
+        <span class="nav-label">Anonymous Questions</span>
+        <span class="nav-desc">Submit questions anonymously</span>
+      </a>
+    </nav>
   </div>
-
-  <!-- Admin button in the bottom corner -->
-  <a href="/admin" class="admin-btn">Admin</a>
-
-  <script src="/js/app.js"></script>
 </body>
 </html>

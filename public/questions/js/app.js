@@ -1,10 +1,9 @@
 // ============================================================
-// AnonAEBC - User-Facing JavaScript
-// Handles anonymous question submission, viewing, editing, and deleting
+// Shabibeh - Anonymous Questions
+// User-facing: submission, viewing, editing, and deleting
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
-  // ----- DOM Elements -----
   const form = document.getElementById('question-form');
   const input = document.getElementById('question-input');
   const submitBtn = document.getElementById('submit-btn');
@@ -82,10 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (res.ok) {
-        // Store the edit token
         addToken(data.question.id, data.question.edit_token);
-
-        // Show success view and load user's questions
         formView.classList.add('hidden');
         successView.classList.remove('hidden');
         loadMyQuestions();
@@ -162,12 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
       `;
 
-      // Edit button
       card.querySelector('.edit-btn').addEventListener('click', () => {
         startEditing(card, q);
       });
 
-      // Delete button
       card.querySelector('.delete-btn').addEventListener('click', () => {
         showDeleteModal(q.id);
       });
@@ -181,14 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const textEl = card.querySelector('.question-text');
     const actionsEl = card.querySelector('.question-actions');
 
-    // Replace text with textarea
     const textarea = document.createElement('textarea');
     textarea.className = 'edit-textarea';
     textarea.value = question.question_text;
     textarea.maxLength = 500;
     textEl.replaceWith(textarea);
 
-    // Replace action buttons with save/cancel
     actionsEl.innerHTML = `
       <button class="save-btn" title="Save">&#10003;</button>
       <button class="cancel-btn secondary-btn" title="Cancel">&#10005;</button>
@@ -283,28 +275,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideError() {
     errorMessage.classList.add('hidden');
-  }
-
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  function timeAgo(dateString) {
-    const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
-    if (seconds < 60) return 'just now';
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    if (days < 7) return `${days}d ago`;
-    const weeks = Math.floor(days / 7);
-    if (weeks < 5) return `${weeks}w ago`;
-    const months = Math.floor(days / 30);
-    if (months < 12) return `${months}mo ago`;
-    const years = Math.floor(days / 365);
-    return `${years}y ago`;
   }
 });
