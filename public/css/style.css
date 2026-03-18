@@ -160,7 +160,27 @@ button:disabled {
   text-align: center;
 }
 
-/* ----- Admin Button (bottom corner) ----- */
+/* ----- Home Button (top left) ----- */
+.home-btn {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16213e;
+  background-color: #e8e8ed;
+  text-decoration: none;
+  padding: 0.45rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+  font-family: inherit;
+}
+
+.home-btn:hover {
+  background-color: #d0d0d8;
+}
+
+/* ----- Admin Button (bottom right) ----- */
 .admin-btn {
   position: fixed;
   bottom: 1rem;
