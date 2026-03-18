@@ -272,6 +272,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // ----- Load questions on page init -----
+  loadMyQuestions();
+
   // ----- Helper Functions -----
   function showError(msg) {
     errorMessage.textContent = msg;
