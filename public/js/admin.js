@@ -1,7 +1,7 @@
 // ============================================================
 // AnonAEBC - Admin Dashboard JavaScript
-// Handles admin login, question viewing, checkmark toggle
-// for answered/unanswered, and custom delete confirmation
+// Handles admin login, question viewing grouped by IP,
+// checkmark toggle for answered/unanswered, and delete
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let adminPassword = '';
   let viewingAnswered = false;
-  let pendingDeleteId = null; // ID of question waiting for delete confirmation
+  let pendingDeleteId = null;
 
   // ----- Login Form -----
   loginForm.addEventListener('submit', async (e) => {
@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteModal.classList.add('hidden');
   });
 
-  // Close modal when clicking the overlay background
   deleteModal.addEventListener('click', (e) => {
     if (e.target === deleteModal) {
       pendingDeleteId = null;
@@ -104,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadQuestions();
       }
     } catch {
-      // Silently fail — question will still be there on refresh
+      // Silently fail
     }
   });
 
@@ -129,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // ----- Render Questions -----
+  // ----- Render Questions Grouped by IP -----
   function renderQuestions(questions) {
     questionsList.innerHTML = '';
 
@@ -143,36 +142,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     noQuestions.classList.add('hidden');
 
-    questions.forEach((q) => {
-      const card = document.createElement('div');
-      card.className = 'question-card';
+    // Group by IP address
+    const groups = new Map();
+    questions.forEach(q => {
+      const ip = q.ip_address || 'Unknown';
+      if (!groups.has(ip)) groups.set(ip, []);
+      groups.get(ip).push(q);
+    });
 
-      const time = new Date(q.created_at).toLocaleString();
+    // Sort groups: most questions first
+    const sortedGroups = [...groups.entries()].sort((a, b) => b[1].length - a[1].length);
 
-      // Checkmark button: toggles answered state
-      const checkTitle = viewingAnswered ? 'Mark as unanswered' : 'Mark as answered';
+    sortedGroups.forEach(([ip, groupQuestions]) => {
+      const group = document.createElement('div');
+      group.className = 'ip-group';
 
-      card.innerHTML = `
-        <p class="question-text">${escapeHtml(q.question_text)}</p>
-        <div class="question-meta">
-          <span class="timestamp">${time}</span>
-          <div class="question-actions">
-            <button class="check-btn ${viewingAnswered ? 'checked' : ''}" title="${checkTitle}">&#10003;</button>
-            <button class="delete-btn" title="Delete">&#10005;</button>
-          </div>
-        </div>
+      const header = document.createElement('div');
+      header.className = 'ip-group-header';
+      header.innerHTML = `
+        <span class="ip-label">${escapeHtml(ip)}</span>
+        <span class="ip-count">${groupQuestions.length} question${groupQuestions.length !== 1 ? 's' : ''}</span>
       `;
+      group.appendChild(header);
 
-      // Checkmark toggle handler
-      card.querySelector('.check-btn').addEventListener('click', () => toggleAnswered(q.id));
+      groupQuestions.forEach(q => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
 
-      // Delete handler — show custom modal
-      card.querySelector('.delete-btn').addEventListener('click', () => {
-        pendingDeleteId = q.id;
-        deleteModal.classList.remove('hidden');
+        const time = new Date(q.created_at).toLocaleString();
+        const checkTitle = viewingAnswered ? 'Mark as unanswered' : 'Mark as answered';
+
+        card.innerHTML = `
+          <p class="question-text">${escapeHtml(q.question_text)}</p>
+          <div class="question-meta">
+            <span class="timestamp">${time}</span>
+            <div class="question-actions">
+              <button class="check-btn ${viewingAnswered ? 'checked' : ''}" title="${checkTitle}">&#10003;</button>
+              <button class="delete-btn" title="Delete">&#10005;</button>
+            </div>
+          </div>
+        `;
+
+        card.querySelector('.check-btn').addEventListener('click', () => toggleAnswered(q.id));
+        card.querySelector('.delete-btn').addEventListener('click', () => {
+          pendingDeleteId = q.id;
+          deleteModal.classList.remove('hidden');
+        });
+
+        group.appendChild(card);
       });
 
-      questionsList.appendChild(card);
+      questionsList.appendChild(group);
     });
   }
 

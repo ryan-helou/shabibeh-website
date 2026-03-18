@@ -180,6 +180,68 @@ button:disabled {
   background-color: #d0d0d8;
 }
 
+/* ----- User's Submitted Questions ----- */
+.my-questions-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #16213e;
+  margin-bottom: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.my-question-card .edit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: #e8e8ed;
+  color: #16213e;
+}
+
+.my-question-card .edit-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.my-question-card .edit-textarea {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 0.5rem;
+}
+
+.my-question-card .save-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.my-question-card .save-btn:hover {
+  background-color: #219a52;
+}
+
+.my-question-card .cancel-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+}
+
 /* ----- Dashboard ----- */
 .dashboard-header {
   display: flex;
@@ -204,6 +266,33 @@ button:disabled {
   width: auto;
   padding: 0.4rem 0.75rem;
   font-size: 0.8rem;
+}
+
+/* ----- IP Grouping ----- */
+.ip-group {
+  margin-bottom: 1.5rem;
+}
+
+.ip-group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background-color: #e8e8ed;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.ip-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16213e;
+  font-family: monospace;
+}
+
+.ip-count {
+  font-size: 0.75rem;
+  color: #555;
 }
 
 /* Question card in admin dashboard */
