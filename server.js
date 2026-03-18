@@ -8,7 +8,6 @@ const express = require('express');
 const path = require('path');
 const { createClient } = require('@supabase/supabase-js');
 const crypto = require('crypto');
-const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,20 +31,10 @@ app.set('trust proxy', true); // trust proxy to get real IP (e.g. behind Render/
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ----- Rate Limiting -----
-// Users can submit max 1 question every 10 seconds
-const submitLimiter = rateLimit({
-  windowMs: 10 * 1000, // 10 seconds
-  max: 1,
-  message: { error: 'Please wait 10 seconds before submitting another question.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
 // ----- API Routes -----
 
 // POST /api/questions - Submit a new anonymous question
-app.post('/api/questions', submitLimiter, async (req, res) => {
+app.post('/api/questions', async (req, res) => {
   const { question_text } = req.body;
 
   // Validate: question must exist
