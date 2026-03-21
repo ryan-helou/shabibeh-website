@@ -474,6 +474,13 @@ button:disabled {
 }
 
 /* ----- Home Page ----- */
+.home-logo {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  margin-bottom: 0.75rem;
+}
+
 .home-container {
   display: flex;
   flex-direction: column;
