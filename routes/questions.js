@@ -10,7 +10,7 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
 
   // POST /api/questions - Submit a new anonymous question
   router.post('/', async (req, res) => {
-    const { question_text } = req.body;
+    const { question_text, name } = req.body;
 
     if (!question_text || typeof question_text !== 'string') {
       return res.status(400).json({ error: 'Question text is required.' });
@@ -24,13 +24,15 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
       return res.status(400).json({ error: 'Question must be 500 characters or less.' });
     }
 
+    const trimmedName = (name && typeof name === 'string') ? name.trim().slice(0, 100) || null : null;
+
     const edit_token = crypto.randomUUID();
     const ip_address = req.ip || req.connection.remoteAddress || 'unknown';
 
     const { data, error } = await supabase
       .from('questions')
-      .insert({ question_text: trimmed, edit_token, ip_address })
-      .select('id, question_text, created_at, edit_token')
+      .insert({ question_text: trimmed, edit_token, ip_address, name: trimmedName })
+      .select('id, question_text, created_at, edit_token, name')
       .single();
 
     if (error) {

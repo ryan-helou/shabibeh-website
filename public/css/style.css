@@ -49,6 +49,11 @@ header h1 {
 }
 
 /* ----- Form Elements ----- */
+#name-input {
+  margin-bottom: 0.75rem;
+  resize: none;
+}
+
 textarea,
 input[type="password"],
 input[type="text"] {
@@ -327,6 +332,17 @@ button:disabled {
 
 .question-card:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.question-card .question-name {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16213e;
+  background-color: #e8e8ed;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.4rem;
 }
 
 .question-card .question-text {

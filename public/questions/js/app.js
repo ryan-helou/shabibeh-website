@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('question-form');
+  const nameInput = document.getElementById('name-input');
   const input = document.getElementById('question-input');
   const submitBtn = document.getElementById('submit-btn');
   const charCounter = document.getElementById('char-counter');
@@ -75,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('/api/questions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question_text: questionText }),
+        body: JSON.stringify({ question_text: questionText, name: nameInput.value.trim() || null }),
       });
 
       const data = await res.json();
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ----- "Ask Another Question" Button -----
   anotherBtn.addEventListener('click', () => {
+    nameInput.value = '';
     input.value = '';
     charCounter.textContent = '0';
     charCountWrap.classList.remove('over-limit');
