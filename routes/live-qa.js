@@ -274,6 +274,47 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
     res.json({ questions: data || [], session });
   });
 
+  // GET /api/live-qa/admin/past-sessions - Get past (inactive) sessions with questions
+  router.get('/admin/past-sessions', async (req, res) => {
+    const password = req.headers['x-admin-password'];
+    if (password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+
+    const { data: sessions, error: sessionsError } = await supabase
+      .from('live_qa_sessions')
+      .select('id, created_at')
+      .eq('active', false)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (sessionsError) {
+      return res.status(500).json({ error: 'Failed to fetch past sessions.' });
+    }
+
+    if (!sessions || sessions.length === 0) {
+      return res.json({ sessions: [] });
+    }
+
+    const sessionIds = sessions.map(s => s.id);
+    const { data: questions, error: questionsError } = await supabase
+      .from('live_qa_questions')
+      .select('id, session_id, question_text, upvotes, created_at')
+      .in('session_id', sessionIds)
+      .order('upvotes', { ascending: false });
+
+    if (questionsError) {
+      return res.status(500).json({ error: 'Failed to fetch questions.' });
+    }
+
+    const result = sessions.map(s => ({
+      ...s,
+      questions: (questions || []).filter(q => q.session_id === s.id),
+    }));
+
+    res.json({ sessions: result });
+  });
+
   // DELETE /api/live-qa/admin/questions/:id - Delete a question
   router.delete('/admin/questions/:id', async (req, res) => {
     const password = req.headers['x-admin-password'];
