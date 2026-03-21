@@ -41,6 +41,9 @@ app.use('/api/recordings', recordingsRoutes);
 const slidesRoutes = require('./routes/slides')();
 app.use('/api/slides', slidesRoutes);
 
+const liveQaRoutes = require('./routes/live-qa')(supabase, ADMIN_PASSWORD);
+app.use('/api/live-qa', liveQaRoutes);
+
 // ----- Page Routes -----
 app.get('/questions', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'index.html'));
@@ -52,6 +55,14 @@ app.get('/questions/admin', (req, res) => {
 
 app.get('/recordings', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'recordings', 'index.html'));
+});
+
+app.get('/live-qa', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'live-qa', 'index.html'));
+});
+
+app.get('/live-qa/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'live-qa', 'admin.html'));
 });
 
 app.get('/slides', (req, res) => {
