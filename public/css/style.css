@@ -866,6 +866,13 @@ button:disabled {
   margin-right: 0.75rem;
 }
 
+.viewer-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.viewer-action-btn,
 .viewer-close {
   width: 36px;
   height: 36px;
@@ -879,9 +886,10 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  line-height: 0;
 }
 
+.viewer-action-btn:hover,
 .viewer-close:hover {
   background: rgba(255, 255, 255, 0.25);
 }
