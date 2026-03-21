@@ -757,6 +757,85 @@ button:disabled {
   vertical-align: middle;
 }
 
+/* ----- Sermon Slides ----- */
+.slide-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  transition: box-shadow 0.2s;
+}
+
+.slide-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.slide-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.slide-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.slide-meta {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  margin-top: 0.3rem;
+}
+
+.slide-meta .timestamp,
+.slide-size {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.slide-controls {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.slide-controls .view-btn,
+.slide-controls .download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  background-color: #e8e8ed;
+  color: #16213e;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  line-height: 0;
+}
+
+.slide-controls .view-btn:hover,
+.slide-controls .download-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.slide-controls .view-btn:hover svg {
+  stroke: #fff;
+}
+
 /* ----- Desktop Adjustments ----- */
 @media (min-width: 600px) {
   .container {

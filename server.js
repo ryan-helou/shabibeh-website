@@ -38,6 +38,9 @@ app.use('/api/questions', questionsRoutes);
 const recordingsRoutes = require('./routes/recordings')();
 app.use('/api/recordings', recordingsRoutes);
 
+const slidesRoutes = require('./routes/slides')();
+app.use('/api/slides', slidesRoutes);
+
 // ----- Page Routes -----
 app.get('/questions', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'index.html'));
@@ -49,6 +52,10 @@ app.get('/questions/admin', (req, res) => {
 
 app.get('/recordings', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'recordings', 'index.html'));
+});
+
+app.get('/slides', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'slides', 'index.html'));
 });
 
 // Home page
