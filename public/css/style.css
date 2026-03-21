@@ -523,6 +523,156 @@ button:disabled {
   color: #888;
 }
 
+/* ----- Recordings ----- */
+#search-input {
+  margin-bottom: 1rem;
+}
+
+.recording-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 0.2s;
+}
+
+.recording-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.recording-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.recording-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a2e;
+  line-height: 1.4;
+  word-wrap: break-word;
+  flex: 1;
+}
+
+.recording-meta {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.recording-meta .timestamp,
+.recording-size {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.recording-controls {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.65rem;
+}
+
+.recording-controls .play-btn,
+.recording-controls .download-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  font-size: 1.1rem;
+  border-radius: 8px;
+  background-color: #e8e8ed;
+  color: #16213e;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.recording-controls .play-btn:hover,
+.recording-controls .download-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.recording-controls .play-btn.loading {
+  pointer-events: none;
+  position: relative;
+}
+
+.recording-controls .play-btn.loading::after {
+  content: '';
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid #d1d1d1;
+  border-top-color: #16213e;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Audio Player */
+.audio-player {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.player-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.player-time,
+.player-duration {
+  font-size: 0.75rem;
+  color: #888;
+  min-width: 2.5rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.player-duration {
+  text-align: right;
+}
+
+.player-seek {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #d1d1d1;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.player-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #16213e;
+  cursor: pointer;
+}
+
+.player-seek::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #16213e;
+  border: none;
+  cursor: pointer;
+}
+
 /* ----- Desktop Adjustments ----- */
 @media (min-width: 600px) {
   .container {

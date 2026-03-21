@@ -35,6 +35,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 const questionsRoutes = require('./routes/questions')(supabase, ADMIN_PASSWORD);
 app.use('/api/questions', questionsRoutes);
 
+const recordingsRoutes = require('./routes/recordings')();
+app.use('/api/recordings', recordingsRoutes);
+
 // ----- Page Routes -----
 app.get('/questions', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'index.html'));
@@ -42,6 +45,10 @@ app.get('/questions', (req, res) => {
 
 app.get('/questions/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'admin.html'));
+});
+
+app.get('/recordings', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'recordings', 'index.html'));
 });
 
 // Home page
