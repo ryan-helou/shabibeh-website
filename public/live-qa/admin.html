@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Q&A Admin - Shabibeh</title>
+  <link rel="icon" type="image/png" href="/churchlogo.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Live Q&A</h1>
+      <p class="subtitle">Admin Dashboard</p>
+    </header>
+
+    <!-- Login -->
+    <main id="login-view">
+      <form id="login-form">
+        <input type="password" id="password-input" placeholder="Enter admin password" required>
+        <button type="submit">Log In</button>
+      </form>
+      <div id="login-error" class="error hidden"></div>
+    </main>
+
+    <!-- Dashboard -->
+    <main id="dashboard-view" class="hidden">
+      <!-- No active session -->
+      <div id="no-session-admin">
+        <p class="muted">No active session.</p>
+        <div class="session-start-actions">
+          <button id="start-public-btn">Start Session (Public Voting)</button>
+          <button id="start-private-btn" class="secondary-btn">Start Session (Private)</button>
+        </div>
+      </div>
+
+      <!-- Active session controls -->
+      <div id="session-controls" class="hidden">
+        <div class="session-status">
+          <span id="session-mode" class="session-mode-tag"></span>
+          <div class="session-actions">
+            <button id="toggle-visibility-btn" class="secondary-btn"></button>
+            <button id="close-session-btn" class="close-session-btn">End Session</button>
+          </div>
+        </div>
+
+        <h2 class="live-qa-heading">Questions <span id="admin-question-count" class="question-count"></span></h2>
+        <div id="admin-questions-list"></div>
+        <p id="admin-no-questions" class="muted hidden">No questions yet.</p>
+      </div>
+    </main>
+  </div>
+
+  <a href="/live-qa" class="admin-btn">Back</a>
+
+  <script src="/js/common.js"></script>
+  <script src="/live-qa/js/admin.js"></script>
+</body>
+</html>
