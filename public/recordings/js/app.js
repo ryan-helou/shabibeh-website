@@ -153,6 +153,44 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       });
 
+      // ----- Polling timer for mobile reliability -----
+      let pollTimer = null;
+
+      function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(() => {
+          if (!audio.paused && audio.duration) {
+            // Update time display
+            playerTime.textContent = formatTime(audio.currentTime);
+            seekBar.value = Math.floor(audio.currentTime);
+
+            // Update loading state
+            if (audio.readyState >= 3) {
+              playBtn.classList.remove('loading');
+              playBtn.innerHTML = '&#9646;&#9646;';
+            } else {
+              playBtn.classList.add('loading');
+              playBtn.innerHTML = '';
+            }
+
+            // Update buffered bar
+            if (audio.buffered.length > 0) {
+              const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
+              bufferedBar.style.width = (bufferedEnd / audio.duration) * 100 + '%';
+            }
+
+            // Save position every 5 seconds
+            if (Math.floor(audio.currentTime) % 5 === 0) {
+              savePosition(r.id, audio.currentTime);
+            }
+          }
+        }, 250);
+      }
+
+      function stopPolling() {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+      }
+
       // ----- Play/Pause -----
       playBtn.addEventListener('click', () => {
         if (currentAudio && currentAudio !== audio) {
@@ -169,12 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
           audioPlayer.classList.remove('hidden');
           currentAudio = audio;
           currentCard = card;
-          audio.play();
+          audio.play().catch(() => {
+            playBtn.innerHTML = '&#9654;';
+            playBtn.classList.remove('loading');
+          });
+          startPolling();
         } else {
           audio.pause();
           savePosition(r.id, audio.currentTime);
           playBtn.innerHTML = '&#9654;';
           playBtn.classList.remove('loading');
+          stopPolling();
         }
       });
 
@@ -191,28 +234,31 @@ document.addEventListener('DOMContentLoaded', () => {
       audio.addEventListener('loadedmetadata', () => {
         playerDuration.textContent = formatTime(audio.duration);
         seekBar.max = Math.floor(audio.duration);
-        // Resume from saved position
         const saved = getPosition(r.id);
         if (saved > 0 && saved < audio.duration - 5) {
           audio.currentTime = saved;
         }
       });
 
+      audio.addEventListener('durationchange', () => {
+        if (audio.duration && isFinite(audio.duration)) {
+          playerDuration.textContent = formatTime(audio.duration);
+          seekBar.max = Math.floor(audio.duration);
+        }
+      });
+
       audio.addEventListener('timeupdate', () => {
         playerTime.textContent = formatTime(audio.currentTime);
         seekBar.value = Math.floor(audio.currentTime);
-        // Save position every 5 seconds
         if (Math.floor(audio.currentTime) % 5 === 0) {
           savePosition(r.id, audio.currentTime);
         }
       });
 
-      // ----- Buffered Progress -----
       audio.addEventListener('progress', () => {
         if (audio.buffered.length > 0 && audio.duration > 0) {
           const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
-          const percent = (bufferedEnd / audio.duration) * 100;
-          bufferedBar.style.width = percent + '%';
+          bufferedBar.style.width = (bufferedEnd / audio.duration) * 100 + '%';
         }
       });
 
@@ -222,6 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         seekBar.value = 0;
         playerTime.textContent = '0:00';
         clearPosition(r.id);
+        stopPolling();
       });
 
       seekBar.addEventListener('input', () => {
