@@ -991,6 +991,22 @@ button:disabled {
 
 .live-qa-card.admin .delete-btn {
   flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  font-size: 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fdecea;
+  color: #c0392b;
+}
+
+.live-qa-card.admin .delete-btn:hover {
+  background-color: #c0392b;
+  color: #fff;
 }
 
 /* Session controls */

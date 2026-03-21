@@ -187,8 +187,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
   }
 
-  // Also re-check session every 15 seconds in case it opens/closes
-  setInterval(checkSession, 15000);
+  // Re-check session every 5 seconds in case it opens/closes
+  setInterval(checkSession, 5000);
 
   function showError(msg) {
     errorMessage.textContent = msg;
