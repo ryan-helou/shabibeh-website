@@ -110,10 +110,18 @@ document.addEventListener('DOMContentLoaded', () => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
           <a href="${s.download_url}" class="download-btn" title="Download" download>&#8615;</a>
+          ${navigator.share ? '<button class="share-btn" title="Share"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></button>' : ''}
         </div>
       `;
 
       card.querySelector('.view-btn').addEventListener('click', () => openViewer(s));
+
+      const shareBtn = card.querySelector('.share-btn');
+      if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+          navigator.share({ title: s.name, url: s.download_url }).catch(() => {});
+        });
+      }
 
       list.appendChild(card);
     });

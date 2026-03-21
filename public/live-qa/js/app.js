@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const questionsList = document.getElementById('questions-list');
   const questionCount = document.getElementById('question-count');
   const privateMessage = document.getElementById('private-message');
+  const lastUpdated = document.getElementById('last-updated');
 
   let pollTimer = null;
 
@@ -123,6 +124,8 @@ document.addEventListener('DOMContentLoaded', () => {
         questionsSection.classList.remove('hidden');
         privateMessage.classList.add('hidden');
         questionCount.textContent = `(${data.questions.length})`;
+        const now = new Date();
+        lastUpdated.textContent = 'Updated ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', second: '2-digit' });
         renderQuestions(data.questions);
       } else {
         questionsSection.classList.add('hidden');
