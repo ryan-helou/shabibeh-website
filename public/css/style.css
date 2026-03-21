@@ -1183,6 +1183,71 @@ button:disabled {
   color: #fff;
 }
 
+/* ----- Ideas ----- */
+.ideas-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #16213e;
+  margin-bottom: 0.75rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 1.25rem;
+}
+
+.idea-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 0.6rem;
+  transition: box-shadow 0.2s;
+}
+
+.idea-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.idea-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #1a1a2e;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.idea-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.65rem;
+}
+
+.idea-footer .timestamp {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.idea-footer .delete-btn {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  background-color: #fdecea;
+  color: #c0392b;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.idea-footer .delete-btn:hover {
+  background-color: #c0392b;
+  color: #fff;
+}
+
 /* ----- Mobile Fixes ----- */
 @media (max-width: 500px) {
   .session-status {

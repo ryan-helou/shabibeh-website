@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ideas - Shabibeh</title>
+  <link rel="icon" type="image/png" href="/churchlogo.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Ideas</h1>
+      <p class="subtitle">Future website improvements</p>
+    </header>
+
+    <!-- Login -->
+    <main id="login-view">
+      <form id="login-form">
+        <input type="password" id="password-input" placeholder="Enter admin password" required>
+        <button type="submit">Log In</button>
+      </form>
+      <div id="login-error" class="error hidden"></div>
+    </main>
+
+    <!-- Ideas Dashboard -->
+    <main id="dashboard-view" class="hidden">
+      <form id="idea-form">
+        <textarea id="idea-input" placeholder="Write your idea..." rows="3" required></textarea>
+        <button type="submit" id="submit-btn">Add Idea</button>
+      </form>
+      <div id="error-message" class="error hidden"></div>
+
+      <h2 class="ideas-heading">Ideas <span id="idea-count" class="question-count"></span></h2>
+      <div id="ideas-list"></div>
+      <p id="no-ideas" class="muted hidden">No ideas yet. Add one above!</p>
+    </main>
+  </div>
+
+  <a href="/" class="home-btn" title="Home">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    <span>Back to Home</span>
+  </a>
+
+  <script src="/js/common.js"></script>
+  <script src="/ideas/js/app.js"></script>
+</body>
+</html>
