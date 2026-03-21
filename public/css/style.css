@@ -1099,6 +1099,14 @@ button:disabled {
   font-size: 0.85rem;
   font-weight: 600;
   color: #16213e;
+  display: block;
+}
+
+.past-session-time {
+  font-size: 0.75rem;
+  color: #888;
+  display: block;
+  margin-top: 0.1rem;
 }
 
 .past-session-count {

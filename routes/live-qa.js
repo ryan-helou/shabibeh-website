@@ -231,7 +231,7 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
 
     const { error } = await supabase
       .from('live_qa_sessions')
-      .update({ active: false })
+      .update({ active: false, ended_at: new Date().toISOString() })
       .eq('active', true);
 
     if (error) {
@@ -283,7 +283,7 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
 
     const { data: sessions, error: sessionsError } = await supabase
       .from('live_qa_sessions')
-      .select('id, created_at')
+      .select('id, created_at, ended_at')
       .eq('active', false)
       .order('created_at', { ascending: false })
       .limit(20);

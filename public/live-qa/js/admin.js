@@ -245,15 +245,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const group = document.createElement('div');
         group.className = 'past-session-group';
 
-        const date = new Date(session.created_at);
-        const dateStr = date.toLocaleDateString('en-US', {
+        const start = new Date(session.created_at);
+        const dayStr = start.toLocaleDateString('en-US', {
           weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
         });
+        const startTime = start.toLocaleTimeString('en-US', {
+          hour: 'numeric', minute: '2-digit'
+        });
+        let endTime = '';
+        if (session.ended_at) {
+          const end = new Date(session.ended_at);
+          endTime = ' — ' + end.toLocaleTimeString('en-US', {
+            hour: 'numeric', minute: '2-digit'
+          });
+        }
 
         const header = document.createElement('div');
         header.className = 'past-session-header';
         header.innerHTML = `
-          <span class="past-session-date">${dateStr}</span>
+          <div>
+            <span class="past-session-date">${dayStr}</span>
+            <span class="past-session-time">${startTime}${endTime}</span>
+          </div>
           <span class="past-session-count">${session.questions.length} question${session.questions.length !== 1 ? 's' : ''}</span>
         `;
         group.appendChild(header);
@@ -267,14 +280,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           session.questions.forEach(q => {
             const card = document.createElement('div');
-            card.className = 'live-qa-card';
+            card.className = 'live-qa-card admin';
             card.innerHTML = `
               <div class="live-qa-upvote-display">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
                 <span>${q.upvotes}</span>
               </div>
               <div class="live-qa-text">${escapeHtml(q.question_text)}</div>
+              <button class="delete-btn" title="Delete">&#10005;</button>
             `;
+
+            card.querySelector('.delete-btn').addEventListener('click', async () => {
+              await deleteQuestion(q.id);
+              pastSessionsLoaded = false;
+              loadPastSessions();
+            });
+
             group.appendChild(card);
           });
         }
