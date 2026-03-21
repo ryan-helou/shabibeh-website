@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const viewerTitle = document.getElementById('viewer-title');
   const viewerFrame = document.getElementById('viewer-frame');
   const viewerClose = document.getElementById('viewer-close');
+  const viewerFullscreen = document.getElementById('viewer-fullscreen');
 
   let allSlides = [];
 
@@ -30,6 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // ----- Viewer -----
   viewerClose.addEventListener('click', closeViewer);
 
+  viewerFullscreen.addEventListener('click', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      viewer.requestFullscreen().catch(() => {
+        // Fallback for iOS Safari
+        if (viewer.webkitRequestFullscreen) viewer.webkitRequestFullscreen();
+      });
+    }
+  });
+
   function openViewer(slide) {
     viewerTitle.textContent = slide.name;
     viewerFrame.src = `https://drive.google.com/file/d/${slide.id}/preview`;
@@ -38,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function closeViewer() {
+    if (document.fullscreenElement) document.exitFullscreen();
     viewer.classList.add('hidden');
     viewerFrame.src = '';
     document.body.style.overflow = '';
