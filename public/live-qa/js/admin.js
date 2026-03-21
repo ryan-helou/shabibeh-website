@@ -93,9 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // ----- Close Session -----
-  closeSessionBtn.addEventListener('click', async () => {
-    if (!confirm('End the current Q&A session?')) return;
+  const endModal = document.getElementById('end-session-modal');
+  const endModalCancel = document.getElementById('end-modal-cancel');
+  const endModalConfirm = document.getElementById('end-modal-confirm');
 
+  closeSessionBtn.addEventListener('click', () => {
+    endModal.classList.remove('hidden');
+  });
+
+  endModalCancel.addEventListener('click', () => {
+    endModal.classList.add('hidden');
+  });
+
+  endModal.addEventListener('click', (e) => {
+    if (e.target === endModal) endModal.classList.add('hidden');
+  });
+
+  endModalConfirm.addEventListener('click', async () => {
+    endModal.classList.add('hidden');
     try {
       const res = await fetch('/api/live-qa/admin/session', {
         method: 'DELETE',
