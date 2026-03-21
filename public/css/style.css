@@ -644,8 +644,29 @@ button:disabled {
   text-align: right;
 }
 
-.player-seek {
+.seek-container {
   flex: 1;
+  position: relative;
+  height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.buffered-bar {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 4px;
+  background: #b0b0b0;
+  border-radius: 2px;
+  width: 0%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.player-seek {
+  width: 100%;
   height: 4px;
   -webkit-appearance: none;
   appearance: none;
@@ -653,6 +674,8 @@ button:disabled {
   border-radius: 2px;
   outline: none;
   cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .player-seek::-webkit-slider-thumb {
@@ -671,6 +694,47 @@ button:disabled {
   background: #16213e;
   border: none;
   cursor: pointer;
+}
+
+/* ----- Speed Controls ----- */
+.speed-controls {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.speed-btn {
+  flex: 1;
+  padding: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 6px;
+  background-color: #e8e8ed;
+  color: #16213e;
+  border: none;
+  cursor: pointer;
+}
+
+.speed-btn:hover {
+  background-color: #d0d0d8;
+}
+
+.speed-btn.active {
+  background-color: #16213e;
+  color: #fff;
+}
+
+/* ----- Resume Tag ----- */
+.resume-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: #16213e;
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  margin-left: 0.3rem;
+  vertical-align: middle;
 }
 
 /* ----- Desktop Adjustments ----- */

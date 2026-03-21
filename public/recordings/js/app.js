@@ -13,6 +13,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentCard = null;
   let allRecordings = [];
 
+  // ----- Playback Position Storage -----
+  function savePosition(id, time) {
+    try {
+      const positions = JSON.parse(localStorage.getItem('recording_positions') || '{}');
+      positions[id] = time;
+      localStorage.setItem('recording_positions', JSON.stringify(positions));
+    } catch {}
+  }
+
+  function getPosition(id) {
+    try {
+      const positions = JSON.parse(localStorage.getItem('recording_positions') || '{}');
+      return positions[id] || 0;
+    } catch { return 0; }
+  }
+
+  function clearPosition(id) {
+    try {
+      const positions = JSON.parse(localStorage.getItem('recording_positions') || '{}');
+      delete positions[id];
+      localStorage.setItem('recording_positions', JSON.stringify(positions));
+    } catch {}
+  }
+
+  // ----- Search -----
   searchInput.addEventListener('input', () => {
     const query = searchInput.value.toLowerCase().trim();
     if (!query) {
@@ -52,7 +77,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderRecordings(recordings) {
+    // Stop current audio if playing
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio = null;
+      currentCard = null;
+    }
+
     list.innerHTML = '';
+
+    if (recordings.length === 0) {
+      list.innerHTML = '<p class="muted">No recordings found.</p>';
+      return;
+    }
 
     recordings.forEach(r => {
       const card = document.createElement('div');
@@ -61,10 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const sizeText = r.size ? `${r.size} MB` : '';
       const time = timeAgo(r.created_at);
+      const savedPos = getPosition(r.id);
+      const resumeTag = savedPos > 0 ? '<span class="resume-tag">Resume</span>' : '';
 
       card.innerHTML = `
         <div class="recording-info">
-          <div class="recording-name">${escapeHtml(r.name)}</div>
+          <div class="recording-name">${escapeHtml(r.name)} ${resumeTag}</div>
           <div class="recording-meta">
             <span class="timestamp">${time}</span>
             ${sizeText ? `<span class="recording-size">${sizeText}</span>` : ''}
@@ -80,8 +119,17 @@ document.addEventListener('DOMContentLoaded', () => {
           </audio>
           <div class="player-row">
             <span class="player-time">0:00</span>
-            <input type="range" class="player-seek" min="0" max="100" value="0">
+            <div class="seek-container">
+              <div class="buffered-bar"></div>
+              <input type="range" class="player-seek" min="0" max="100" value="0">
+            </div>
             <span class="player-duration">0:00</span>
+          </div>
+          <div class="speed-controls">
+            <button class="speed-btn" data-speed="0.5">0.5x</button>
+            <button class="speed-btn active" data-speed="1">1x</button>
+            <button class="speed-btn" data-speed="1.5">1.5x</button>
+            <button class="speed-btn" data-speed="2">2x</button>
           </div>
         </div>
       `;
@@ -90,23 +138,32 @@ document.addEventListener('DOMContentLoaded', () => {
       const audioPlayer = card.querySelector('.audio-player');
       const audio = card.querySelector('audio');
       const seekBar = card.querySelector('.player-seek');
+      const bufferedBar = card.querySelector('.buffered-bar');
       const playerTime = card.querySelector('.player-time');
       const playerDuration = card.querySelector('.player-duration');
+      const speedBtns = card.querySelectorAll('.speed-btn');
 
-      let isLoading = false;
+      // ----- Speed Controls -----
+      speedBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const speed = parseFloat(btn.dataset.speed);
+          audio.playbackRate = speed;
+          speedBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+        });
+      });
 
+      // ----- Play/Pause -----
       playBtn.addEventListener('click', () => {
-        // If another recording is playing, stop it
         if (currentAudio && currentAudio !== audio) {
+          savePosition(currentCard.dataset.id, currentAudio.currentTime);
           currentAudio.pause();
-          currentAudio.currentTime = 0;
           currentCard.querySelector('.audio-player').classList.add('hidden');
           currentCard.querySelector('.play-btn').innerHTML = '&#9654;';
           currentCard.querySelector('.play-btn').classList.remove('loading');
         }
 
         if (audio.paused) {
-          isLoading = true;
           playBtn.innerHTML = '';
           playBtn.classList.add('loading');
           audioPlayer.classList.remove('hidden');
@@ -115,19 +172,18 @@ document.addEventListener('DOMContentLoaded', () => {
           audio.play();
         } else {
           audio.pause();
+          savePosition(r.id, audio.currentTime);
           playBtn.innerHTML = '&#9654;';
           playBtn.classList.remove('loading');
         }
       });
 
       audio.addEventListener('playing', () => {
-        isLoading = false;
         playBtn.classList.remove('loading');
         playBtn.innerHTML = '&#9646;&#9646;';
       });
 
       audio.addEventListener('waiting', () => {
-        isLoading = true;
         playBtn.classList.add('loading');
         playBtn.innerHTML = '';
       });
@@ -135,11 +191,29 @@ document.addEventListener('DOMContentLoaded', () => {
       audio.addEventListener('loadedmetadata', () => {
         playerDuration.textContent = formatTime(audio.duration);
         seekBar.max = Math.floor(audio.duration);
+        // Resume from saved position
+        const saved = getPosition(r.id);
+        if (saved > 0 && saved < audio.duration - 5) {
+          audio.currentTime = saved;
+        }
       });
 
       audio.addEventListener('timeupdate', () => {
         playerTime.textContent = formatTime(audio.currentTime);
         seekBar.value = Math.floor(audio.currentTime);
+        // Save position every 5 seconds
+        if (Math.floor(audio.currentTime) % 5 === 0) {
+          savePosition(r.id, audio.currentTime);
+        }
+      });
+
+      // ----- Buffered Progress -----
+      audio.addEventListener('progress', () => {
+        if (audio.buffered.length > 0 && audio.duration > 0) {
+          const bufferedEnd = audio.buffered.end(audio.buffered.length - 1);
+          const percent = (bufferedEnd / audio.duration) * 100;
+          bufferedBar.style.width = percent + '%';
+        }
       });
 
       audio.addEventListener('ended', () => {
@@ -147,6 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         playBtn.classList.remove('loading');
         seekBar.value = 0;
         playerTime.textContent = '0:00';
+        clearPosition(r.id);
       });
 
       seekBar.addEventListener('input', () => {
