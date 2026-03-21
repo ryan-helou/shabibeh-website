@@ -9,7 +9,7 @@ module.exports = function () {
   const router = express.Router();
 
   const API_KEY = process.env.GOOGLE_DRIVE_API_KEY;
-  const FOLDER_ID = process.env.GOOGLE_DRIVE_FOLDER_ID;
+  const FOLDER_ID = process.env.GOOGLE_DRIVE_RECORDINGS_FOLDER_ID;
 
   // GET /api/recordings - List all MP3 files in the Drive folder
   router.get('/', async (req, res) => {
