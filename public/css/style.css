@@ -170,19 +170,24 @@ button:disabled {
   position: fixed;
   top: 1rem;
   left: 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #16213e;
-  background-color: #e8e8ed;
+  font-size: 1.4rem;
+  color: #fff;
+  background-color: #16213e;
   text-decoration: none;
-  padding: 0.45rem 1rem;
-  border-radius: 8px;
-  transition: background-color 0.2s;
-  font-family: inherit;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 50;
 }
 
 .home-btn:hover {
-  background-color: #d0d0d8;
+  background-color: #1a2a50;
+  transform: scale(1.05);
 }
 
 /* ----- Admin Button (bottom right) ----- */

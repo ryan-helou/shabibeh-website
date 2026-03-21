@@ -35,7 +35,7 @@ module.exports = function () {
         name: f.name.replace(/\.mp3$/i, ''),
         size: f.size ? Math.round(Number(f.size) / (1024 * 1024) * 10) / 10 : null,
         created_at: f.createdTime,
-        stream_url: `https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&key=${API_KEY}`,
+        stream_url: `/api/recordings/stream/${f.id}`,
         download_url: `https://docs.google.com/uc?export=download&id=${f.id}`,
       }));
 
@@ -43,6 +43,53 @@ module.exports = function () {
     } catch (err) {
       console.error('Recordings fetch error:', err);
       res.status(500).json({ error: 'Failed to fetch recordings.' });
+    }
+  });
+
+  // GET /api/recordings/stream/:id - Proxy audio with Range request support
+  router.get('/stream/:id', async (req, res) => {
+    const { id } = req.params;
+    const driveUrl = `https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${API_KEY}`;
+
+    try {
+      // Forward the Range header from the browser to Google Drive
+      const headers = {};
+      if (req.headers.range) {
+        headers['Range'] = req.headers.range;
+      }
+
+      const response = await fetch(driveUrl, { headers });
+
+      // Set response headers
+      res.set('Content-Type', 'audio/mpeg');
+      res.set('Accept-Ranges', 'bytes');
+
+      const contentLength = response.headers.get('content-length');
+      const contentRange = response.headers.get('content-range');
+
+      if (contentLength) res.set('Content-Length', contentLength);
+      if (contentRange) res.set('Content-Range', contentRange);
+
+      // 206 for partial content (range requests), 200 for full
+      res.status(response.status === 206 ? 206 : 200);
+
+      // Stream the response
+      const reader = response.body.getReader();
+      const pump = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) { res.end(); return; }
+          if (!res.write(value)) {
+            await new Promise(resolve => res.once('drain', resolve));
+          }
+        }
+      };
+      pump().catch(() => res.end());
+    } catch (err) {
+      console.error('Stream error:', err);
+      if (!res.headersSent) {
+        res.status(500).json({ error: 'Failed to stream recording.' });
+      }
     }
   });
 
