@@ -35,7 +35,7 @@ module.exports = function () {
         name: f.name.replace(/\.mp3$/i, ''),
         size: f.size ? Math.round(Number(f.size) / (1024 * 1024) * 10) / 10 : null,
         created_at: f.createdTime,
-        stream_url: `/api/recordings/stream/${f.id}`,
+        stream_url: `https://www.googleapis.com/drive/v3/files/${f.id}?alt=media&key=${API_KEY}`,
         download_url: `https://docs.google.com/uc?export=download&id=${f.id}`,
       }));
 
@@ -43,52 +43,6 @@ module.exports = function () {
     } catch (err) {
       console.error('Recordings fetch error:', err);
       res.status(500).json({ error: 'Failed to fetch recordings.' });
-    }
-  });
-
-  // GET /api/recordings/stream/:id - Proxy audio stream from Google Drive
-  router.get('/stream/:id', async (req, res) => {
-    const { id } = req.params;
-
-    try {
-      // First try the direct download URL
-      let url = `https://drive.google.com/uc?export=download&id=${id}`;
-      let response = await fetch(url, { redirect: 'follow' });
-
-      // If we get an HTML page (virus scan warning), extract the confirm URL
-      const contentType = response.headers.get('content-type') || '';
-      if (contentType.includes('text/html')) {
-        const html = await response.text();
-        const match = html.match(/href="(\/uc\?export=download[^"]+)"/);
-        if (match) {
-          const confirmUrl = `https://drive.google.com${match[1].replace(/&amp;/g, '&')}`;
-          response = await fetch(confirmUrl, { redirect: 'follow' });
-        } else {
-          return res.status(500).json({ error: 'Could not resolve download link.' });
-        }
-      }
-
-      res.set('Content-Type', 'audio/mpeg');
-      res.set('Accept-Ranges', 'bytes');
-      const size = response.headers.get('content-length');
-      if (size) res.set('Content-Length', size);
-
-      const reader = response.body.getReader();
-      const pump = async () => {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) { res.end(); return; }
-          if (!res.write(value)) {
-            await new Promise(resolve => res.once('drain', resolve));
-          }
-        }
-      };
-      pump().catch(() => res.end());
-    } catch (err) {
-      console.error('Stream error:', err);
-      if (!res.headersSent) {
-        res.status(500).json({ error: 'Failed to stream recording.' });
-      }
     }
   });
 
