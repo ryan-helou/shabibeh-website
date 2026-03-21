@@ -22,6 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
   let viewingAnswered = false;
   let pendingDeleteId = null;
 
+  // ----- Auto-login from saved session -----
+  async function tryAutoLogin() {
+    const saved = localStorage.getItem('admin_password');
+    if (!saved) return;
+
+    try {
+      const res = await fetch('/api/questions/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: saved }),
+      });
+
+      if (res.ok) {
+        adminPassword = saved;
+        loginView.classList.add('hidden');
+        dashboardView.classList.remove('hidden');
+        loadQuestions();
+      } else {
+        localStorage.removeItem('admin_password');
+      }
+    } catch {}
+  }
+
+  tryAutoLogin();
+
   // ----- Login Form -----
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -38,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         adminPassword = password;
+        localStorage.setItem('admin_password', password);
         loginView.classList.add('hidden');
         dashboardView.classList.remove('hidden');
         loadQuestions();
