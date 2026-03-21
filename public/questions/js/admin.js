@@ -164,7 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const time = timeAgo(q.created_at);
         const checkTitle = viewingAnswered ? 'Mark as unanswered' : 'Mark as answered';
 
+        const nameTag = q.name ? `<span class="question-name">${escapeHtml(q.name)}</span>` : '';
+
         card.innerHTML = `
+          ${nameTag}
           <p class="question-text">${escapeHtml(q.question_text)}</p>
           <div class="question-meta">
             <span class="timestamp">${time}</span>
