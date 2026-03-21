@@ -1109,9 +1109,36 @@ button:disabled {
   margin-top: 0.1rem;
 }
 
+.past-session-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .past-session-count {
   font-size: 0.75rem;
   color: #555;
+}
+
+.past-session-delete {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  padding: 0;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  background-color: #fdecea;
+  color: #c0392b;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.past-session-delete:hover {
+  background-color: #c0392b;
+  color: #fff;
 }
 
 /* ----- Mobile Fixes ----- */
