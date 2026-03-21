@@ -170,12 +170,11 @@ button:disabled {
   position: fixed;
   top: 1rem;
   left: 1rem;
-  font-size: 1.4rem;
   color: #fff;
   background-color: #16213e;
   text-decoration: none;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -183,6 +182,7 @@ button:disabled {
   transition: background-color 0.2s, transform 0.2s;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   z-index: 50;
+  line-height: 0;
 }
 
 .home-btn:hover {
