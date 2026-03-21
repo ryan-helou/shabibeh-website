@@ -744,6 +744,32 @@ button:disabled {
   color: #fff;
 }
 
+/* ----- Share Button ----- */
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 8px;
+  background-color: #e8e8ed;
+  color: #16213e;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  line-height: 0;
+}
+
+.share-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.share-btn:hover svg {
+  stroke: #fff;
+}
+
 /* ----- Resume Tag ----- */
 .resume-tag {
   display: inline-block;
@@ -901,6 +927,22 @@ button:disabled {
 }
 
 /* ----- Live Q&A ----- */
+.live-qa-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.25rem;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.last-updated {
+  font-size: 0.7rem;
+  color: #999;
+  white-space: nowrap;
+}
+
 .live-qa-heading {
   font-size: 1rem;
   font-weight: 600;
@@ -1175,8 +1217,10 @@ button:disabled {
 
   .recording-controls .play-btn,
   .recording-controls .download-btn,
+  .recording-controls .share-btn,
   .slide-controls .view-btn,
-  .slide-controls .download-btn {
+  .slide-controls .download-btn,
+  .slide-controls .share-btn {
     width: 44px;
     height: 44px;
   }
