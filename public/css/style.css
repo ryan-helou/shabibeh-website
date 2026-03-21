@@ -836,6 +836,62 @@ button:disabled {
   stroke: #fff;
 }
 
+/* ----- Slide Viewer ----- */
+.slide-viewer {
+  position: fixed;
+  inset: 0;
+  background: #1a1a2e;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+}
+
+.viewer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #16213e;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.viewer-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  margin-right: 0.75rem;
+}
+
+.viewer-close {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.viewer-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.viewer-frame {
+  flex: 1;
+  width: 100%;
+  border: none;
+}
+
 /* ----- Desktop Adjustments ----- */
 @media (min-width: 600px) {
   .container {

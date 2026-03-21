@@ -8,6 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const loading = document.getElementById('loading');
   const errorMessage = document.getElementById('error-message');
   const searchInput = document.getElementById('search-input');
+  const viewer = document.getElementById('slide-viewer');
+  const viewerTitle = document.getElementById('viewer-title');
+  const viewerFrame = document.getElementById('viewer-frame');
+  const viewerClose = document.getElementById('viewer-close');
 
   let allSlides = [];
 
@@ -22,6 +26,22 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     renderSlides(filtered);
   });
+
+  // ----- Viewer -----
+  viewerClose.addEventListener('click', closeViewer);
+
+  function openViewer(slide) {
+    viewerTitle.textContent = slide.name;
+    viewerFrame.src = `https://drive.google.com/file/d/${slide.id}/preview`;
+    viewer.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeViewer() {
+    viewer.classList.add('hidden');
+    viewerFrame.src = '';
+    document.body.style.overflow = '';
+  }
 
   async function loadSlides() {
     try {
@@ -73,12 +93,14 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </div>
         <div class="slide-controls">
-          <a href="${s.view_url}" target="_blank" class="view-btn" title="View">
+          <button class="view-btn" title="View">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          </a>
+          </button>
           <a href="${s.download_url}" class="download-btn" title="Download" download>&#8615;</a>
         </div>
       `;
+
+      card.querySelector('.view-btn').addEventListener('click', () => openViewer(s));
 
       list.appendChild(card);
     });
