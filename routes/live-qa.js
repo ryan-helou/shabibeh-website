@@ -315,6 +315,31 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
     res.json({ sessions: result });
   });
 
+  // DELETE /api/live-qa/admin/session/:id - Delete a past session
+  router.delete('/admin/session/:id', async (req, res) => {
+    const password = req.headers['x-admin-password'];
+    if (password !== ADMIN_PASSWORD) {
+      return res.status(401).json({ error: 'Unauthorized.' });
+    }
+
+    const { id } = req.params;
+
+    // Delete questions first (cascade should handle it but just in case)
+    await supabase.from('live_qa_questions').delete().eq('session_id', id);
+
+    const { error } = await supabase
+      .from('live_qa_sessions')
+      .delete()
+      .eq('id', id)
+      .eq('active', false);
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to delete session.' });
+    }
+
+    res.json({ success: true });
+  });
+
   // DELETE /api/live-qa/admin/questions/:id - Delete a question
   router.delete('/admin/questions/:id', async (req, res) => {
     const password = req.headers['x-admin-password'];

@@ -267,8 +267,24 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="past-session-date">${dayStr}</span>
             <span class="past-session-time">${startTime}${endTime}</span>
           </div>
-          <span class="past-session-count">${session.questions.length} question${session.questions.length !== 1 ? 's' : ''}</span>
+          <div class="past-session-right">
+            <span class="past-session-count">${session.questions.length} question${session.questions.length !== 1 ? 's' : ''}</span>
+            <button class="past-session-delete" title="Delete session">&#10005;</button>
+          </div>
         `;
+
+        header.querySelector('.past-session-delete').addEventListener('click', async () => {
+          try {
+            const res = await fetch(`/api/live-qa/admin/session/${session.id}`, {
+              method: 'DELETE',
+              headers: { 'X-Admin-Password': adminPassword },
+            });
+            if (res.ok) {
+              pastSessionsLoaded = false;
+              loadPastSessions();
+            }
+          } catch {}
+        });
         group.appendChild(header);
 
         if (session.questions.length === 0) {
