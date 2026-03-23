@@ -19,6 +19,18 @@
 
     <!-- Active session -->
     <div id="session-view" class="hidden">
+      <!-- Questions list (visible when public voting is on) -->
+      <div id="questions-section" class="hidden">
+        <div class="live-qa-heading-row">
+          <h2 class="live-qa-heading" style="border:none;margin:0;padding:0">Questions <span id="question-count" class="question-count"></span></h2>
+          <span id="last-updated" class="last-updated"></span>
+        </div>
+        <div id="questions-list"></div>
+      </div>
+
+      <!-- Private mode message -->
+      <div id="private-message" class="muted hidden">Your questions have been submitted. The speaker will review them.</div>
+
       <!-- Submission form -->
       <form id="question-form">
         <textarea
@@ -36,18 +48,6 @@
 
       <div id="submit-success" class="success-inline hidden">Question submitted!</div>
       <div id="error-message" class="error hidden"></div>
-
-      <!-- Questions list (visible when public voting is on) -->
-      <div id="questions-section" class="hidden">
-        <div class="live-qa-heading-row">
-          <h2 class="live-qa-heading" style="border:none;margin:0;padding:0">Questions <span id="question-count" class="question-count"></span></h2>
-          <span id="last-updated" class="last-updated"></span>
-        </div>
-        <div id="questions-list"></div>
-      </div>
-
-      <!-- Private mode message -->
-      <div id="private-message" class="muted hidden">Your questions have been submitted. The speaker will review them.</div>
     </div>
   </div>
 

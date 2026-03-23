@@ -164,7 +164,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  const upvoteInFlight = new Set();
+
   async function toggleUpvote(id, currentlyVoted) {
+    if (upvoteInFlight.has(id)) return;
+    upvoteInFlight.add(id);
     try {
       if (currentlyVoted) {
         await fetch(`/api/live-qa/questions/${id}/upvote`, { method: 'DELETE' });
@@ -176,6 +180,8 @@ document.addEventListener('DOMContentLoaded', () => {
       loadQuestions();
     } catch {
       // silently fail
+    } finally {
+      upvoteInFlight.delete(id);
     }
   }
 
