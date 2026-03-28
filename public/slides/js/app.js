@@ -17,16 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   let allSlides = [];
 
   const pastorFilter = document.getElementById('pastor-filter');
-  const dateFilter = document.getElementById('date-filter');
 
   function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
     const pastor = pastorFilter.value;
-    const date = dateFilter.value;
     const filtered = allSlides.filter(s => {
       if (query && !s.sermon.toLowerCase().includes(query) && !s.pastor.toLowerCase().includes(query)) return false;
       if (pastor && s.pastor !== pastor) return false;
-      if (date && s.date !== date) return false;
       return true;
     });
     renderSlides(filtered);
@@ -34,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchInput.addEventListener('input', applyFilters);
   pastorFilter.addEventListener('change', applyFilters);
-  dateFilter.addEventListener('change', applyFilters);
 
   // ----- Viewer -----
   viewerClose.addEventListener('click', closeViewer);

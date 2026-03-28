@@ -38,17 +38,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const pastorFilter = document.getElementById('pastor-filter');
-  const dateFilter = document.getElementById('date-filter');
 
   // ----- Filtering -----
   function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
     const pastor = pastorFilter.value;
-    const date = dateFilter.value;
     const filtered = allRecordings.filter(r => {
       if (query && !r.sermon.toLowerCase().includes(query) && !r.pastor.toLowerCase().includes(query)) return false;
       if (pastor && r.pastor !== pastor) return false;
-      if (date && r.date !== date) return false;
       return true;
     });
     renderRecordings(filtered);
@@ -56,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   searchInput.addEventListener('input', applyFilters);
   pastorFilter.addEventListener('change', applyFilters);
-  dateFilter.addEventListener('change', applyFilters);
 
   async function loadRecordings() {
     try {
