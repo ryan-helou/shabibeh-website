@@ -54,12 +54,25 @@ document.addEventListener('DOMContentLoaded', () => {
   searchInput.addEventListener('input', applyFilters);
   pastorFilter.addEventListener('change', applyFilters);
 
+  // ----- Skeleton Loading -----
+  function showSkeletons() {
+    loading.classList.add('hidden');
+    list.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'skeleton-card';
+      sk.innerHTML = '<div class="skeleton-line" style="width:60%"></div><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:30%"></div>';
+      list.appendChild(sk);
+    }
+  }
+
   async function loadRecordings() {
+    showSkeletons();
     try {
       const res = await fetch('/api/recordings');
       const data = await res.json();
 
-      loading.classList.add('hidden');
+      list.innerHTML = '';
 
       if (!res.ok) {
         showError(data.error || 'Failed to load recordings.');
@@ -101,13 +114,13 @@ document.addEventListener('DOMContentLoaded', () => {
     list.innerHTML = '';
 
     if (recordings.length === 0) {
-      list.innerHTML = '<p class="muted">No recordings found.</p>';
+      list.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No recordings found</p></div>';
       return;
     }
 
     recordings.forEach(r => {
       const card = document.createElement('div');
-      card.className = 'recording-card';
+      card.className = 'recording-card reveal';
       card.dataset.id = r.id;
 
       const savedPos = getPosition(r.id);
@@ -296,6 +309,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       list.appendChild(card);
     });
+
+    initReveal();
   }
 
   function formatTime(seconds) {

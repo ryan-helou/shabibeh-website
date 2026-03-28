@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Live Q&A - Shabibeh</title>
   <link rel="icon" type="image/png" href="/churchlogo.png">
   <link rel="stylesheet" href="/css/style.css">
@@ -33,13 +33,16 @@
 
       <!-- Submission form -->
       <form id="question-form">
-        <textarea
-          id="question-input"
-          placeholder="Ask your question..."
-          maxlength="500"
-          rows="3"
-          required
-        ></textarea>
+        <div class="float-label">
+          <textarea
+            id="question-input"
+            placeholder=" "
+            maxlength="500"
+            rows="3"
+            required
+          ></textarea>
+          <label for="question-input">Ask your question...</label>
+        </div>
         <div class="char-count">
           <span id="char-counter">0</span>/500
         </div>
