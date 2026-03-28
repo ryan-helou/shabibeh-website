@@ -40,12 +40,36 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
 
     const { data, error } = await supabase
       .from('ideas')
-      .insert({ text: text.trim() })
+      .insert({ text: text.trim(), status: 'todo' })
       .select()
       .single();
 
     if (error) {
       return res.status(500).json({ error: 'Failed to save idea.' });
+    }
+
+    res.json({ idea: data });
+  });
+
+  // PATCH /api/ideas/:id - Update an idea (text and/or status)
+  router.patch('/:id', requireAdmin, async (req, res) => {
+    const updates = {};
+    if (req.body.text !== undefined) updates.text = req.body.text.trim();
+    if (req.body.status !== undefined) updates.status = req.body.status;
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: 'Nothing to update.' });
+    }
+
+    const { data, error } = await supabase
+      .from('ideas')
+      .update(updates)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ error: 'Failed to update idea.' });
     }
 
     res.json({ idea: data });

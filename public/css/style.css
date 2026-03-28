@@ -192,24 +192,41 @@ button:disabled {
   transform: scale(1.05);
 }
 
-/* ----- Admin Button (bottom right) ----- */
-.admin-btn {
+/* ----- Settings Button (bottom right) ----- */
+.settings-btn {
   position: fixed;
   bottom: 1rem;
   right: 1rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #16213e;
+  z-index: 100;
+  border-radius: 10px;
+  border: none;
   background-color: #e8e8ed;
-  text-decoration: none;
-  padding: 0.45rem 1rem;
-  border-radius: 8px;
-  transition: background-color 0.2s;
+  color: #16213e;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.9rem;
   font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.admin-btn:hover {
+.settings-btn:hover {
   background-color: #d0d0d8;
+}
+
+.settings-nav {
+  display: grid;
+  gap: 1rem;
+  transition: background-color 0.15s;
+}
+
+.settings-item:hover {
+  background-color: #f0f0f5;
 }
 
 /* ----- User's Submitted Questions ----- */
@@ -543,9 +560,35 @@ button:disabled {
   color: #888;
 }
 
+/* ----- Filter Row ----- */
+.filter-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.filter-row select,
+.filter-row input[type="date"] {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  border: 2px solid #d1d1d1;
+  border-radius: 10px;
+  background: #fff;
+  color: #1a1a2e;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.filter-row select:focus,
+.filter-row input[type="date"]:focus {
+  outline: none;
+  border-color: #16213e;
+}
+
 /* ----- Recordings ----- */
 #search-input {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .recording-card {
@@ -563,9 +606,7 @@ button:disabled {
 
 .recording-info {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 0.5rem;
+  flex-direction: column;
 }
 
 .recording-name {
@@ -577,17 +618,18 @@ button:disabled {
   flex: 1;
 }
 
-.recording-meta {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  flex-shrink: 0;
+.recording-pastor,
+.slide-pastor {
+  font-size: 0.8rem;
+  color: #555;
+  margin-top: 0.2rem;
 }
 
-.recording-meta .timestamp,
-.recording-size {
+.recording-date,
+.slide-date {
   font-size: 0.75rem;
   color: #999;
+  margin-top: 0.15rem;
 }
 
 .recording-controls {
@@ -819,12 +861,6 @@ button:disabled {
   gap: 0.6rem;
   align-items: center;
   margin-top: 0.3rem;
-}
-
-.slide-meta .timestamp,
-.slide-size {
-  font-size: 0.75rem;
-  color: #999;
 }
 
 .slide-controls {
@@ -1183,23 +1219,125 @@ button:disabled {
   color: #fff;
 }
 
-/* ----- Ideas ----- */
-.ideas-heading {
+/* ----- Admin Page ----- */
+.admin-section {
+  margin-bottom: 2rem;
+}
+
+.admin-section-title {
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: #16213e;
+  margin-bottom: 0.2rem;
+}
+
+.admin-section-desc {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 1rem;
+}
+
+.toggle-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 48px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 14px;
+  background-color: #d1d1d1;
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.25s;
+}
+
+.toggle-switch.on {
+  background-color: #27ae60;
+}
+
+.toggle-switch.on::after {
+  transform: translateX(20px);
+}
+
+/* ----- Ideas Board ----- */
+.board-section {
+  margin-top: 1.5rem;
+}
+
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.75rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid #e0e0e0;
-  margin-top: 1.25rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.board-header h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #16213e;
+}
+
+.toggle-done-btn {
+  width: auto;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+  background-color: #e8e8ed;
+  color: #16213e;
+}
+
+.toggle-done-btn:hover {
+  background-color: #d0d0d8;
 }
 
 .idea-card {
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 1rem 1.15rem;
-  margin-bottom: 0.6rem;
+  border-left: 3px solid #16213e;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
   transition: box-shadow 0.2s;
 }
 
@@ -1207,8 +1345,23 @@ button:disabled {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
+.idea-card.done {
+  border-left-color: #27ae60;
+  opacity: 0.7;
+}
+
+.idea-card.done .idea-text {
+  text-decoration: line-through;
+  color: #888;
+}
+
+.idea-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .idea-text {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.5;
   color: #1a1a2e;
   word-wrap: break-word;
@@ -1216,36 +1369,109 @@ button:disabled {
 }
 
 .idea-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 0.65rem;
+  margin-top: 0.35rem;
 }
 
 .idea-footer .timestamp {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #999;
 }
 
-.idea-footer .delete-btn {
+.idea-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+
+.idea-action-btn {
   width: 30px;
   height: 30px;
   min-width: 30px;
   padding: 0;
   font-size: 0.85rem;
   border-radius: 6px;
-  background-color: #fdecea;
-  color: #c0392b;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.15s;
 }
 
-.idea-footer .delete-btn:hover {
+.idea-action-btn.check-btn {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.idea-action-btn.check-btn:hover {
+  background-color: #27ae60;
+  color: #fff;
+}
+
+.idea-card.done .idea-action-btn.check-btn {
+  background-color: #e8e8ed;
+  color: #555;
+}
+
+.idea-card.done .idea-action-btn.check-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.idea-action-btn.edit-btn {
+  background-color: #e8e8ed;
+  color: #16213e;
+}
+
+.idea-action-btn.edit-btn:hover {
+  background-color: #16213e;
+  color: #fff;
+}
+
+.idea-action-btn.del-btn {
+  background-color: #fdecea;
+  color: #c0392b;
+}
+
+.idea-action-btn.del-btn:hover {
   background-color: #c0392b;
   color: #fff;
+}
+
+/* Inline edit */
+.idea-edit-textarea {
+  width: 100%;
+  min-height: 60px;
+  padding: 0.6rem;
+  font-size: 0.85rem;
+  border: 2px solid #16213e;
+  border-radius: 8px;
+  resize: vertical;
+  font-family: inherit;
+  margin-bottom: 0.4rem;
+}
+
+.idea-edit-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.idea-save-btn,
+.idea-cancel-btn {
+  width: auto !important;
+  padding: 0.35rem 0.75rem !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
+}
+
+.idea-cancel-btn {
+  background-color: transparent;
+  color: #16213e;
+  border: 1.5px solid #d1d1d1;
+}
+
+.idea-cancel-btn:hover {
+  background-color: #e8e8ed;
 }
 
 /* ----- Mobile Fixes ----- */

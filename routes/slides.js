@@ -30,14 +30,30 @@ module.exports = function () {
         return res.status(500).json({ error: 'Failed to fetch slides.' });
       }
 
-      const slides = (data.files || []).map(f => ({
-        id: f.id,
-        name: f.name.replace(/\.pdf$/i, ''),
-        size: f.size ? Math.round(Number(f.size) / (1024 * 1024) * 10) / 10 : null,
-        created_at: f.createdTime,
-        view_url: `https://drive.google.com/file/d/${f.id}/view`,
-        download_url: `https://docs.google.com/uc?export=download&id=${f.id}`,
-      }));
+      const slides = (data.files || []).map(f => {
+        const raw = f.name.replace(/\.pdf$/i, '');
+        const parts = raw.split('_');
+        let sermon = raw, pastor = '', date = '';
+        if (parts.length >= 3) {
+          sermon = parts.slice(0, -2).join(' ');
+          pastor = parts[parts.length - 2];
+          date = parts[parts.length - 1];
+        } else if (parts.length === 2) {
+          sermon = parts[0];
+          pastor = parts[1];
+        }
+        return {
+          id: f.id,
+          name: raw,
+          sermon,
+          pastor,
+          date,
+          size: f.size ? Math.round(Number(f.size) / (1024 * 1024) * 10) / 10 : null,
+          created_at: f.createdTime,
+          view_url: `https://drive.google.com/file/d/${f.id}/view`,
+          download_url: `https://docs.google.com/uc?export=download&id=${f.id}`,
+        };
+      });
 
       res.json({ slides });
     } catch (err) {

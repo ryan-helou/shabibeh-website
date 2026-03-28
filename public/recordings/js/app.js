@@ -37,18 +37,26 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch {}
   }
 
-  // ----- Search -----
-  searchInput.addEventListener('input', () => {
+  const pastorFilter = document.getElementById('pastor-filter');
+  const dateFilter = document.getElementById('date-filter');
+
+  // ----- Filtering -----
+  function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
-    if (!query) {
-      renderRecordings(allRecordings);
-      return;
-    }
-    const filtered = allRecordings.filter(r =>
-      r.name.toLowerCase().includes(query)
-    );
+    const pastor = pastorFilter.value;
+    const date = dateFilter.value;
+    const filtered = allRecordings.filter(r => {
+      if (query && !r.sermon.toLowerCase().includes(query) && !r.pastor.toLowerCase().includes(query)) return false;
+      if (pastor && r.pastor !== pastor) return false;
+      if (date && r.date !== date) return false;
+      return true;
+    });
     renderRecordings(filtered);
-  });
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  pastorFilter.addEventListener('change', applyFilters);
+  dateFilter.addEventListener('change', applyFilters);
 
   async function loadRecordings() {
     try {
@@ -69,6 +77,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       allRecordings = data.recordings;
+
+      // Populate pastor dropdown
+      const pastors = [...new Set(allRecordings.map(r => r.pastor).filter(Boolean))].sort();
+      pastors.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        pastorFilter.appendChild(opt);
+      });
+
       renderRecordings(allRecordings);
     } catch {
       loading.classList.add('hidden');
@@ -96,18 +114,14 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'recording-card';
       card.dataset.id = r.id;
 
-      const sizeText = r.size ? `${r.size} MB` : '';
-      const time = timeAgo(r.created_at);
       const savedPos = getPosition(r.id);
       const resumeTag = savedPos > 0 ? '<span class="resume-tag">Resume</span>' : '';
 
       card.innerHTML = `
         <div class="recording-info">
-          <div class="recording-name">${escapeHtml(r.name)} ${resumeTag}</div>
-          <div class="recording-meta">
-            <span class="timestamp">${time}</span>
-            ${sizeText ? `<span class="recording-size">${sizeText}</span>` : ''}
-          </div>
+          <div class="recording-name">${escapeHtml(r.sermon)} ${resumeTag}</div>
+          ${r.pastor ? `<div class="recording-pastor">${escapeHtml(r.pastor)}</div>` : ''}
+          ${r.date ? `<div class="recording-date">${escapeHtml(r.date)}</div>` : ''}
         </div>
         <div class="recording-controls">
           <button class="play-btn" title="Play">&#9654;</button>

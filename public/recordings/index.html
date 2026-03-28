@@ -17,8 +17,14 @@
     <input
       type="text"
       id="search-input"
-      placeholder="Search recordings..."
+      placeholder="Search sermons..."
     >
+    <div class="filter-row">
+      <select id="pastor-filter">
+        <option value="">All Pastors</option>
+      </select>
+      <input type="date" id="date-filter">
+    </div>
 
     <div id="loading" class="muted">Loading recordings...</div>
     <div id="error-message" class="error hidden"></div>

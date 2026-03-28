@@ -16,23 +16,23 @@
       </div>
     </header>
 
-    <nav class="home-nav">
-      <a href="/questions" class="nav-card">
+    <nav class="home-nav" id="home-nav">
+      <a href="/questions" class="nav-card" data-section="show_questions">
         <span class="nav-icon">💬</span>
         <span class="nav-label">Questions</span>
         <span class="nav-desc">Submit your questions</span>
       </a>
-      <a href="/recordings" class="nav-card">
+      <a href="/recordings" class="nav-card" data-section="show_recordings">
         <span class="nav-icon">🎙️</span>
         <span class="nav-label">Recordings</span>
         <span class="nav-desc">Listen to past sermons</span>
       </a>
-      <a href="/slides" class="nav-card">
+      <a href="/slides" class="nav-card" data-section="show_slides">
         <span class="nav-icon">📖</span>
         <span class="nav-label">Sermon Slides</span>
         <span class="nav-desc">View and download sermon slides</span>
       </a>
-      <a href="/live-qa" class="nav-card">
+      <a href="/live-qa" class="nav-card" data-section="show_live_qa">
         <span class="nav-icon">🙋</span>
         <span class="nav-label">Live Q&A</span>
         <span class="nav-desc">Ask questions during the sermon</span>
@@ -40,6 +40,20 @@
     </nav>
   </div>
 
-  <a href="/ideas" class="admin-btn">Ideas</a>
+  <a href="/settings" class="settings-btn">⚙️ Admin</a>
+
+  <script>
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(data => {
+        const s = data.settings || {};
+        document.querySelectorAll('[data-section]').forEach(card => {
+          if (s[card.dataset.section] === false) {
+            card.style.display = 'none';
+          }
+        });
+      })
+      .catch(() => {});
+  </script>
 </body>
 </html>

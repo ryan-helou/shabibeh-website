@@ -1,5 +1,5 @@
 // ============================================================
-// Shabibeh - Ideas
+// Shabibeh - Ideas Board
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -12,11 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const ideaInput = document.getElementById('idea-input');
   const submitBtn = document.getElementById('submit-btn');
   const errorMessage = document.getElementById('error-message');
-  const ideaCount = document.getElementById('idea-count');
-  const ideasList = document.getElementById('ideas-list');
-  const noIdeas = document.getElementById('no-ideas');
+  const todoCount = document.getElementById('todo-count');
+  const doneCount = document.getElementById('done-count');
+  const todoList = document.getElementById('todo-list');
+  const doneList = document.getElementById('done-list');
+  const noTodo = document.getElementById('no-todo');
+  const toggleDoneBtn = document.getElementById('toggle-done');
 
   let adminPassword = '';
+  let doneVisible = false;
+
+  // ----- Toggle Done Section -----
+  toggleDoneBtn.addEventListener('click', () => {
+    doneVisible = !doneVisible;
+    doneList.classList.toggle('hidden', !doneVisible);
+    toggleDoneBtn.textContent = doneVisible ? 'Hide' : 'Show';
+  });
 
   // ----- Auto-login -----
   const saved = localStorage.getItem('admin_password');
@@ -45,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loginView.classList.add('hidden');
         dashboardView.classList.remove('hidden');
         const data = await res.json();
-        renderIdeas(data.ideas);
+        renderBoard(data.ideas);
       } else {
         loginError.textContent = 'Wrong password.';
         loginError.classList.remove('hidden');
@@ -99,39 +110,110 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'x-admin-password': adminPassword },
       });
       const data = await res.json();
-      renderIdeas(data.ideas);
+      renderBoard(data.ideas);
     } catch {}
   }
 
-  function renderIdeas(ideas) {
-    ideasList.innerHTML = '';
-    ideaCount.textContent = `(${ideas.length})`;
+  function renderBoard(ideas) {
+    const todoIdeas = ideas.filter(i => i.status !== 'done');
+    const doneIdeas = ideas.filter(i => i.status === 'done');
 
-    if (ideas.length === 0) {
-      noIdeas.classList.remove('hidden');
-      return;
+    todoCount.textContent = `(${todoIdeas.length})`;
+    doneCount.textContent = `(${doneIdeas.length})`;
+
+    // Render todo
+    todoList.innerHTML = '';
+    if (todoIdeas.length === 0) {
+      noTodo.classList.remove('hidden');
+    } else {
+      noTodo.classList.add('hidden');
+      todoIdeas.forEach(idea => todoList.appendChild(createCard(idea)));
     }
 
-    noIdeas.classList.add('hidden');
+    // Render done
+    doneList.innerHTML = '';
+    if (doneIdeas.length === 0) {
+      doneList.innerHTML = '<p class="muted">No completed ideas yet.</p>';
+    } else {
+      doneIdeas.forEach(idea => doneList.appendChild(createCard(idea)));
+    }
+  }
 
-    ideas.forEach(idea => {
-      const card = document.createElement('div');
-      card.className = 'idea-card';
+  function createCard(idea) {
+    const card = document.createElement('div');
+    const isDone = idea.status === 'done';
+    card.className = 'idea-card' + (isDone ? ' done' : '');
 
-      const time = timeAgo(idea.created_at);
+    const time = timeAgo(idea.created_at);
 
-      card.innerHTML = `
+    card.innerHTML = `
+      <div class="idea-content">
         <div class="idea-text">${escapeHtml(idea.text)}</div>
         <div class="idea-footer">
           <span class="timestamp">${time}</span>
-          <button class="delete-btn" title="Delete">&#10005;</button>
+        </div>
+      </div>
+      <div class="idea-actions">
+        <button class="idea-action-btn check-btn" title="${isDone ? 'Undo' : 'Mark done'}">
+          ${isDone ? '↩' : '✓'}
+        </button>
+        <button class="idea-action-btn edit-btn" title="Edit">✎</button>
+        <button class="idea-action-btn del-btn" title="Delete">✕</button>
+      </div>
+    `;
+
+    // Check / uncheck
+    card.querySelector('.check-btn').addEventListener('click', () => {
+      updateIdea(idea.id, { status: isDone ? 'todo' : 'done' });
+    });
+
+    // Edit
+    card.querySelector('.edit-btn').addEventListener('click', () => {
+      const content = card.querySelector('.idea-content');
+      const currentText = idea.text;
+
+      content.innerHTML = `
+        <textarea class="idea-edit-textarea">${escapeHtml(currentText)}</textarea>
+        <div class="idea-edit-actions">
+          <button class="idea-save-btn">Save</button>
+          <button class="idea-cancel-btn secondary-btn">Cancel</button>
         </div>
       `;
 
-      card.querySelector('.delete-btn').addEventListener('click', () => deleteIdea(idea.id));
+      const textarea = content.querySelector('.idea-edit-textarea');
+      textarea.focus();
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 
-      ideasList.appendChild(card);
+      content.querySelector('.idea-save-btn').addEventListener('click', () => {
+        const newText = textarea.value.trim();
+        if (newText && newText !== currentText) {
+          updateIdea(idea.id, { text: newText });
+        } else {
+          loadIdeas();
+        }
+      });
+
+      content.querySelector('.idea-cancel-btn').addEventListener('click', () => loadIdeas());
     });
+
+    // Delete
+    card.querySelector('.del-btn').addEventListener('click', () => deleteIdea(idea.id));
+
+    return card;
+  }
+
+  async function updateIdea(id, updates) {
+    try {
+      await fetch(`/api/ideas/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': adminPassword,
+        },
+        body: JSON.stringify(updates),
+      });
+      loadIdeas();
+    } catch {}
   }
 
   async function deleteIdea(id) {

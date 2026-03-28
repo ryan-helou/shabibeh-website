@@ -47,6 +47,9 @@ app.use('/api/live-qa', liveQaRoutes);
 const ideasRoutes = require('./routes/ideas')(supabase, ADMIN_PASSWORD);
 app.use('/api/ideas', ideasRoutes);
 
+const settingsRoutes = require('./routes/settings')(supabase, ADMIN_PASSWORD);
+app.use('/api/settings', settingsRoutes);
+
 // ----- Page Routes -----
 app.get('/questions', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'index.html'));
@@ -70,6 +73,10 @@ app.get('/live-qa/admin', (req, res) => {
 
 app.get('/slides', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'slides', 'index.html'));
+});
+
+app.get('/settings', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'settings', 'index.html'));
 });
 
 app.get('/ideas', (req, res) => {

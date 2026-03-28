@@ -16,17 +16,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let allSlides = [];
 
-  searchInput.addEventListener('input', () => {
+  const pastorFilter = document.getElementById('pastor-filter');
+  const dateFilter = document.getElementById('date-filter');
+
+  function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
-    if (!query) {
-      renderSlides(allSlides);
-      return;
-    }
-    const filtered = allSlides.filter(s =>
-      s.name.toLowerCase().includes(query)
-    );
+    const pastor = pastorFilter.value;
+    const date = dateFilter.value;
+    const filtered = allSlides.filter(s => {
+      if (query && !s.sermon.toLowerCase().includes(query) && !s.pastor.toLowerCase().includes(query)) return false;
+      if (pastor && s.pastor !== pastor) return false;
+      if (date && s.date !== date) return false;
+      return true;
+    });
     renderSlides(filtered);
-  });
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  pastorFilter.addEventListener('change', applyFilters);
+  dateFilter.addEventListener('change', applyFilters);
 
   // ----- Viewer -----
   viewerClose.addEventListener('click', closeViewer);
@@ -43,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function openViewer(slide) {
-    viewerTitle.textContent = slide.name;
+    viewerTitle.textContent = slide.sermon || slide.name;
     viewerFrame.src = `https://drive.google.com/file/d/${slide.id}/preview`;
     viewer.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
@@ -75,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       allSlides = data.slides;
+
+      const pastors = [...new Set(allSlides.map(s => s.pastor).filter(Boolean))].sort();
+      pastors.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p;
+        opt.textContent = p;
+        pastorFilter.appendChild(opt);
+      });
+
       renderSlides(allSlides);
     } catch {
       loading.classList.add('hidden');
@@ -94,16 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'slide-card';
 
-      const sizeText = s.size ? `${s.size} MB` : '';
-      const time = timeAgo(s.created_at);
-
       card.innerHTML = `
         <div class="slide-info">
-          <div class="slide-name">${escapeHtml(s.name)}</div>
-          <div class="slide-meta">
-            <span class="timestamp">${time}</span>
-            ${sizeText ? `<span class="slide-size">${sizeText}</span>` : ''}
-          </div>
+          <div class="slide-name">${escapeHtml(s.sermon)}</div>
+          ${s.pastor ? `<div class="slide-pastor">${escapeHtml(s.pastor)}</div>` : ''}
+          ${s.date ? `<div class="slide-date">${escapeHtml(s.date)}</div>` : ''}
         </div>
         <div class="slide-controls">
           <button class="view-btn" title="View">
