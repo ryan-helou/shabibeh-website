@@ -55,6 +55,8 @@ module.exports = function () {
         };
       });
 
+      slides.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
       res.json({ slides });
     } catch (err) {
       console.error('Slides fetch error:', err);

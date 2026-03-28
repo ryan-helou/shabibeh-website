@@ -55,6 +55,8 @@ module.exports = function () {
         };
       });
 
+      recordings.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+
       res.json({ recordings });
     } catch (err) {
       console.error('Recordings fetch error:', err);
