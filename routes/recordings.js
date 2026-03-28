@@ -5,6 +5,17 @@
 
 const express = require('express');
 
+// Parse "Month Day, Year" (e.g. "December 20, 2025") into "YYYY-MM-DD" for sorting
+function parseEnglishDate(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  if (isNaN(d.getTime())) return '';
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 module.exports = function () {
   const router = express.Router();
 
@@ -32,22 +43,23 @@ module.exports = function () {
 
       const recordings = (data.files || []).map(f => {
         const raw = f.name.replace(/\.mp3$/i, '');
-        const parts = raw.split('_');
+        const parts = raw.split(/\s*_\s*/);
         let sermon = raw, pastor = '', date = '';
         if (parts.length >= 3) {
           sermon = parts.slice(0, -2).join(' ');
-          pastor = parts[parts.length - 2];
-          date = parts[parts.length - 1];
+          pastor = parts[parts.length - 2].trim();
+          date = parts[parts.length - 1].trim();
         } else if (parts.length === 2) {
-          sermon = parts[0];
-          pastor = parts[1];
+          sermon = parts[0].trim();
+          pastor = parts[1].trim();
         }
         return {
           id: f.id,
           name: raw,
-          sermon,
+          sermon: sermon.trim(),
           pastor,
           date,
+          sort_date: parseEnglishDate(date),
           size: f.size ? Math.round(Number(f.size) / (1024 * 1024) * 10) / 10 : null,
           created_at: f.createdTime,
           stream_url: `/api/recordings/stream/${f.id}`,
@@ -55,7 +67,7 @@ module.exports = function () {
         };
       });
 
-      recordings.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+      recordings.sort((a, b) => (b.sort_date || '').localeCompare(a.sort_date || ''));
 
       res.json({ recordings });
     } catch (err) {
