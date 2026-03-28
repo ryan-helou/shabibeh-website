@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Recordings - Shabibeh</title>
   <link rel="icon" type="image/png" href="/churchlogo.png">
   <link rel="stylesheet" href="/css/style.css">
@@ -14,11 +14,14 @@
       <p class="subtitle">Listen to past sermons</p>
     </header>
 
-    <input
-      type="text"
-      id="search-input"
-      placeholder="Search sermons..."
-    >
+    <div class="float-label">
+      <input
+        type="text"
+        id="search-input"
+        placeholder=" "
+      >
+      <label for="search-input">Search sermons...</label>
+    </div>
     <div class="filter-row">
       <select id="pastor-filter">
         <option value="">All Preachers</option>

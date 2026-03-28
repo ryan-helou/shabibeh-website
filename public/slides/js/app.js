@@ -60,12 +60,25 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = '';
   }
 
+  // ----- Skeleton Loading -----
+  function showSkeletons() {
+    loading.classList.add('hidden');
+    list.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+      const sk = document.createElement('div');
+      sk.className = 'skeleton-card';
+      sk.innerHTML = '<div class="skeleton-line" style="width:60%"></div><div class="skeleton-line" style="width:40%"></div><div class="skeleton-line" style="width:30%"></div>';
+      list.appendChild(sk);
+    }
+  }
+
   async function loadSlides() {
+    showSkeletons();
     try {
       const res = await fetch('/api/slides');
       const data = await res.json();
 
-      loading.classList.add('hidden');
+      list.innerHTML = '';
 
       if (!res.ok) {
         showError(data.error || 'Failed to load slides.');
@@ -99,13 +112,13 @@ document.addEventListener('DOMContentLoaded', () => {
     list.innerHTML = '';
 
     if (slides.length === 0) {
-      list.innerHTML = '<p class="muted">No slides found.</p>';
+      list.innerHTML = '<div class="empty-state"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><p>No slides found</p></div>';
       return;
     }
 
     slides.forEach(s => {
       const card = document.createElement('div');
-      card.className = 'slide-card';
+      card.className = 'slide-card reveal';
 
       card.innerHTML = `
         <div class="slide-info">
@@ -133,6 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       list.appendChild(card);
     });
+
+    initReveal();
   }
 
   function showError(msg) {

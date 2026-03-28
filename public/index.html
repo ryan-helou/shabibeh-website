@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Shabibeh</title>
   <link rel="icon" type="image/png" href="/churchlogo.png">
   <link rel="stylesheet" href="/css/style.css">
@@ -54,6 +54,17 @@
         });
       })
       .catch(() => {});
+
+    // Page transition
+    document.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('http') || link.hasAttribute('download')) return;
+        e.preventDefault();
+        document.body.classList.add('page-exit');
+        setTimeout(() => { window.location.href = href; }, 200);
+      });
+    });
   </script>
 </body>
 </html>

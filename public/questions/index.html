@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Questions - Shabibeh</title>
   <link rel="icon" type="image/png" href="/churchlogo.png">
   <link rel="stylesheet" href="/css/style.css">
@@ -17,19 +17,25 @@
     <!-- Question submission form -->
     <main id="form-view">
       <form id="question-form">
-        <input
-          type="text"
-          id="name-input"
-          placeholder="Name (leave empty for anonymous)"
-          maxlength="100"
-        >
-        <textarea
-          id="question-input"
-          placeholder="Ask your question..."
-          maxlength="500"
-          rows="4"
-          required
-        ></textarea>
+        <div class="float-label">
+          <input
+            type="text"
+            id="name-input"
+            placeholder=" "
+            maxlength="100"
+          >
+          <label for="name-input">Name (leave empty for anonymous)</label>
+        </div>
+        <div class="float-label">
+          <textarea
+            id="question-input"
+            placeholder=" "
+            maxlength="500"
+            rows="4"
+            required
+          ></textarea>
+          <label for="question-input">Ask your question...</label>
+        </div>
         <div class="char-count">
           <span id="char-counter">0</span>/500
         </div>
@@ -40,7 +46,10 @@
     <!-- Success message (hidden by default) -->
     <main id="success-view" class="hidden">
       <div class="success-message">
-        <span class="checkmark">&#10004;</span>
+        <svg class="success-checkmark" viewBox="0 0 52 52">
+          <circle class="circle" cx="26" cy="26" r="24" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path class="check" fill="none" stroke="currentColor" stroke-width="3" d="M14 27l7 7 16-16"/>
+        </svg>
         <p>Good job, you submitted!</p>
         <button id="another-btn" class="secondary-btn">Ask another question</button>
       </div>
@@ -51,6 +60,7 @@
 
     <!-- User's submitted questions (always shown if they have past questions) -->
     <div id="my-questions" class="hidden">
+      <div class="gradient-divider"></div>
       <h2 class="my-questions-heading">Your Submitted Questions</h2>
       <div id="my-questions-list"></div>
     </div>
