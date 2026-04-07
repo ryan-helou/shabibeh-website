@@ -1729,6 +1729,33 @@ button:disabled {
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+.analytics-refresh-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  padding: 0;
+  font-size: 1.2rem;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--card-bg);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.analytics-refresh-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.analytics-refresh-btn:active {
+  transform: scale(0.95);
+}
+
 /* Big Stats Cards */
 .big-stats {
   display: grid;
@@ -2346,6 +2373,10 @@ body.page-exit {
   .analytics-top-bar {
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .analytics-select {
+    width: 100%;
   }
 
   .big-stats {
