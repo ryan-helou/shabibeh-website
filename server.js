@@ -86,6 +86,10 @@ app.get('/ideas', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'ideas', 'index.html'));
 });
 
+app.get('/analytics', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'analytics', 'index.html'));
+});
+
 // Home page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));

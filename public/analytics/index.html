@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Analytics - Shabibeh</title>
+  <link rel="icon" type="image/png" href="/churchlogo.png">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container container-analytics">
+    <header>
+      <h1>📊 Analytics</h1>
+      <p class="subtitle">Visitor tracking, engagement metrics, and event insights</p>
+    </header>
+
+    <!-- Login -->
+    <main id="login-view">
+      <form id="login-form">
+        <input type="password" id="password-input" placeholder="Enter admin password" required>
+        <button type="submit">Log In</button>
+      </form>
+      <div id="login-error" class="error hidden"></div>
+    </main>
+
+    <!-- Analytics Dashboard -->
+    <main id="dashboard-view" class="hidden">
+      <div class="analytics-header-row">
+        <div>
+          <h2 class="admin-section-title">Performance Overview</h2>
+          <p class="admin-section-desc">Track daily unique visitors, engagement, and user interactions</p>
+        </div>
+        <div class="analytics-controls">
+          <label for="analytics-days" class="sr-only">Analytics range</label>
+          <select id="analytics-days" class="analytics-select">
+            <option value="7">Last 7 days</option>
+            <option value="14">Last 14 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="60">Last 60 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+          <button id="analytics-refresh-btn" class="secondary-btn analytics-refresh-btn" type="button">Refresh</button>
+        </div>
+      </div>
+
+      <div id="analytics-error" class="error hidden"></div>
+
+      <!-- KPI Cards -->
+      <div class="analytics-metrics" id="analytics-metrics">
+        <article class="metric-card">
+          <p class="metric-label">Unique Visitors</p>
+          <p class="metric-value" id="metric-unique-visitors">-</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Total Events</p>
+          <p class="metric-value" id="metric-total-events">-</p>
+        </article>
+        <article class="metric-card">
+          <p class="metric-label">Avg Events / Day</p>
+          <p class="metric-value" id="metric-avg-events">-</p>
+        </article>
+      </div>
+
+      <!-- Analytics Grid -->
+      <div class="analytics-grid-full">
+        <section class="analytics-card-large">
+          <h3 class="analytics-card-title">Daily Visitor Trend</h3>
+          <div id="daily-trend" class="daily-trend"></div>
+        </section>
+
+        <section class="analytics-card-large">
+          <h3 class="analytics-card-title">Event Breakdown</h3>
+          <div id="event-breakdown" class="analytics-list"></div>
+        </section>
+
+        <section class="analytics-card-large">
+          <h3 class="analytics-card-title">Top Viewed Pages</h3>
+          <div id="top-pages" class="analytics-list"></div>
+        </section>
+
+        <section class="analytics-card-large">
+          <h3 class="analytics-card-title">Most Clicked Elements</h3>
+          <div id="top-clicks" class="analytics-list"></div>
+        </section>
+
+        <section class="analytics-card-large analytics-full-width">
+          <h3 class="analytics-card-title">Recent Events Feed</h3>
+          <div id="recent-events" class="events-table-wrap"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <a href="/settings" class="home-btn" title="Back to Settings">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+    <span>Back</span>
+  </a>
+
+  <script src="/js/analytics.js"></script>
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const loginView = document.getElementById('login-view');
+    const dashboardView = document.getElementById('dashboard-view');
+    const loginForm = document.getElementById('login-form');
+    const passwordInput = document.getElementById('password-input');
+    const loginError = document.getElementById('login-error');
+    const analyticsDaysSelect = document.getElementById('analytics-days');
+    const analyticsRefreshBtn = document.getElementById('analytics-refresh-btn');
+    const analyticsError = document.getElementById('analytics-error');
+
+    let adminPassword = '';
+    let analyticsLoading = false;
+
+    // Auto-login
+    const saved = localStorage.getItem('admin_password');
+    if (saved) {
+      adminPassword = saved;
+      tryLogin(saved);
+    }
+
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      loginError.classList.add('hidden');
+      const pw = passwordInput.value.trim();
+      if (!pw) return;
+      adminPassword = pw;
+      tryLogin(pw);
+    });
+
+    async function tryLogin(pw) {
+      try {
+        const res = await fetch('/api/ideas', {
+          headers: { 'x-admin-password': pw },
+        });
+        if (res.ok) {
+          localStorage.setItem('admin_password', pw);
+          loginView.classList.add('hidden');
+          dashboardView.classList.remove('hidden');
+          loadAnalytics();
+        } else {
+          loginError.textContent = 'Wrong password.';
+          loginError.classList.remove('hidden');
+        }
+      } catch {
+        loginError.textContent = 'Could not connect to server.';
+        loginError.classList.remove('hidden');
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatNumber(value) {
+      const number = Number(value) || 0;
+      return number.toLocaleString();
+    }
+
+    function showAnalyticsError(message) {
+      analyticsError.textContent = message;
+      analyticsError.classList.remove('hidden');
+    }
+
+    function hideAnalyticsError() {
+      analyticsError.textContent = '';
+      analyticsError.classList.add('hidden');
+    }
+
+    function renderMetricCards(overview) {
+      const days = Number(overview.period_days) || 1;
+      const totalEvents = Number(overview.total_events) || 0;
+      const avgEvents = Math.round(totalEvents / Math.max(days, 1));
+
+      document.getElementById('metric-unique-visitors').textContent = formatNumber(overview.unique_visitors);
+      document.getElementById('metric-total-events').textContent = formatNumber(totalEvents);
+      document.getElementById('metric-avg-events').textContent = formatNumber(avgEvents);
+    }
+
+    function renderDailyTrend(dailyRows) {
+      const container = document.getElementById('daily-trend');
+      if (!Array.isArray(dailyRows) || dailyRows.length === 0) {
+        container.innerHTML = '<p class="muted analytics-empty">No trend data yet.</p>';
+        return;
+      }
+
+      const maxEvents = Math.max(...dailyRows.map(d => Number(d.events) || 0), 1);
+
+      container.innerHTML = dailyRows.map((row) => {
+        const events = Number(row.events) || 0;
+        const visitors = Number(row.unique_visitors) || 0;
+        const widthPct = Math.max(4, Math.round((events / maxEvents) * 100));
+        const label = row.date || 'Unknown';
+
+        return `
+          <div class="daily-row">
+            <div class="daily-row-top">
+              <span class="daily-date">${escapeHtml(label)}</span>
+              <span class="daily-meta">${formatNumber(visitors)} visitors, ${formatNumber(events)} events</span>
+            </div>
+            <div class="daily-bar-track"><div class="daily-bar" style="width:${widthPct}%"></div></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderEventBreakdown(events) {
+      const container = document.getElementById('event-breakdown');
+      if (!Array.isArray(events) || events.length === 0) {
+        container.innerHTML = '<p class="muted analytics-empty">No event data yet.</p>';
+        return;
+      }
+
+      container.innerHTML = events.map((item, index) => {
+        const name = item.event_name || 'Unknown';
+        const count = Number(item.count) || 0;
+        return `
+          <div class="rank-item">
+            <span class="rank-index">${index + 1}</span>
+            <span class="rank-label">${escapeHtml(name)}</span>
+            <span class="rank-value">${formatNumber(count)} events</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRankedList(targetId, items, valueKey, labelKey, suffix = '') {
+      const container = document.getElementById(targetId);
+      if (!Array.isArray(items) || items.length === 0) {
+        container.innerHTML = '<p class="muted analytics-empty">No data yet.</p>';
+        return;
+      }
+
+      container.innerHTML = items.slice(0, 12).map((item, index) => {
+        const label = item[labelKey] || 'Unknown';
+        const value = Number(item[valueKey]) || 0;
+        return `
+          <div class="rank-item">
+            <span class="rank-index">${index + 1}</span>
+            <span class="rank-label">${escapeHtml(label)}</span>
+            <span class="rank-value">${formatNumber(value)}${suffix}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRecentEvents(events) {
+      const container = document.getElementById('recent-events');
+      if (!Array.isArray(events) || events.length === 0) {
+        container.innerHTML = '<p class="muted analytics-empty">No events captured yet.</p>';
+        return;
+      }
+
+      const rows = events.slice(0, 50).map((event) => {
+        const when = event.occurred_at ? new Date(event.occurred_at).toLocaleString() : '-';
+        const name = event.event_name || '-';
+        const page = event.page_path || '-';
+        const element = event.element || '-';
+
+        return `
+          <tr>
+            <td>${escapeHtml(when)}</td>
+            <td>${escapeHtml(name)}</td>
+            <td>${escapeHtml(page)}</td>
+            <td>${escapeHtml(element)}</td>
+          </tr>
+        `;
+      }).join('');
+
+      container.innerHTML = `
+        <table class="events-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Event</th>
+              <th>Page</th>
+              <th>Element</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    async function loadAnalytics() {
+      if (analyticsLoading || !adminPassword) return;
+      analyticsLoading = true;
+      analyticsRefreshBtn.disabled = true;
+      hideAnalyticsError();
+
+      const days = analyticsDaysSelect.value || '30';
+
+      try {
+        const headers = { 'x-admin-password': adminPassword };
+        const [overviewRes, eventsRes] = await Promise.all([
+          fetch(`/api/analytics/admin/overview?days=${encodeURIComponent(days)}`, { headers }),
+          fetch('/api/analytics/admin/events?limit=200', { headers }),
+        ]);
+
+        if (!overviewRes.ok || !eventsRes.ok) {
+          throw new Error('Unable to load analytics.');
+        }
+
+        const overviewData = await overviewRes.json();
+        const eventsData = await eventsRes.json();
+
+        renderMetricCards(overviewData);
+        renderDailyTrend(overviewData.daily || []);
+        renderEventBreakdown(overviewData.event_breakdown || []);
+        renderRankedList('top-pages', overviewData.top_pages || [], 'views', 'page_path', ' views');
+        renderRankedList('top-clicks', overviewData.top_clicks || [], 'count', 'element', ' clicks');
+        renderRecentEvents(eventsData.events || []);
+      } catch {
+        showAnalyticsError('Analytics is unavailable. Make sure the analytics_events table exists in Supabase.');
+      } finally {
+        analyticsRefreshBtn.disabled = false;
+        analyticsLoading = false;
+      }
+    }
+
+    analyticsRefreshBtn.addEventListener('click', () => {
+      loadAnalytics();
+    });
+
+    analyticsDaysSelect.addEventListener('change', () => {
+      loadAnalytics();
+    });
+  });
+  </script>
+</body>
+</html>
