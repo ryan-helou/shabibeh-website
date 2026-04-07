@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Analytics - Shabibeh</title>
+  <title>Site Analytics - Shabibeh</title>
   <link rel="icon" type="image/png" href="/churchlogo.png">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="container container-analytics">
     <header>
-      <h1>📊 Analytics</h1>
-      <p class="subtitle">Visitor tracking, engagement metrics, and event insights</p>
+      <h1>📊 Site Analytics</h1>
+      <p class="subtitle">See how people are using your website</p>
     </header>
 
     <!-- Login -->
@@ -25,67 +25,67 @@
 
     <!-- Analytics Dashboard -->
     <main id="dashboard-view" class="hidden">
-      <div class="analytics-header-row">
+      <!-- Time Range Selector -->
+      <div class="analytics-top-bar">
         <div>
-          <h2 class="admin-section-title">Performance Overview</h2>
-          <p class="admin-section-desc">Track daily unique visitors, engagement, and user interactions</p>
-        </div>
-        <div class="analytics-controls">
-          <label for="analytics-days" class="sr-only">Analytics range</label>
+          <p class="analytics-top-label">Show data from:</p>
           <select id="analytics-days" class="analytics-select">
-            <option value="7">Last 7 days</option>
-            <option value="14">Last 14 days</option>
-            <option value="30" selected>Last 30 days</option>
-            <option value="60">Last 60 days</option>
-            <option value="90">Last 90 days</option>
+            <option value="7">Last week</option>
+            <option value="14">Last 2 weeks</option>
+            <option value="30" selected>Last month</option>
+            <option value="60">Last 2 months</option>
+            <option value="90">Last 3 months</option>
           </select>
-          <button id="analytics-refresh-btn" class="secondary-btn analytics-refresh-btn" type="button">Refresh</button>
         </div>
+        <button id="analytics-refresh-btn" class="secondary-btn" type="button">📄 Refresh</button>
       </div>
 
       <div id="analytics-error" class="error hidden"></div>
 
-      <!-- KPI Cards -->
-      <div class="analytics-metrics" id="analytics-metrics">
-        <article class="metric-card">
-          <p class="metric-label">Unique Visitors</p>
-          <p class="metric-value" id="metric-unique-visitors">-</p>
-        </article>
-        <article class="metric-card">
-          <p class="metric-label">Total Events</p>
-          <p class="metric-value" id="metric-total-events">-</p>
-        </article>
-        <article class="metric-card">
-          <p class="metric-label">Avg Events / Day</p>
-          <p class="metric-value" id="metric-avg-events">-</p>
-        </article>
+      <!-- Main Stats -->
+      <div class="big-stats">
+        <div class="big-stat-card">
+          <p class="big-stat-label">People Visiting</p>
+          <p class="big-stat-number" id="metric-unique-visitors">-</p>
+        </div>
+        <div class="big-stat-card">
+          <p class="big-stat-label">Total Interactions</p>
+          <p class="big-stat-number" id="metric-total-events">-</p>
+        </div>
+        <div class="big-stat-card">
+          <p class="big-stat-label">Daily Average</p>
+          <p class="big-stat-number" id="metric-avg-events">-</p>
+        </div>
       </div>
 
-      <!-- Analytics Grid -->
-      <div class="analytics-grid-full">
-        <section class="analytics-card-large">
-          <h3 class="analytics-card-title">Daily Visitor Trend</h3>
+      <!-- Main Charts -->
+      <div class="charts-container">
+        <!-- Visitor Activity Over Time -->
+        <section class="chart-section">
+          <h2 class="chart-title">Visitor Activity</h2>
+          <p class="chart-desc">How many people visited each day</p>
           <div id="daily-trend" class="daily-trend"></div>
         </section>
 
-        <section class="analytics-card-large">
-          <h3 class="analytics-card-title">Event Breakdown</h3>
-          <div id="event-breakdown" class="analytics-list"></div>
+        <!-- What People Are Doing -->
+        <section class="chart-section">
+          <h2 class="chart-title">What People Are Doing</h2>
+          <p class="chart-desc">Types of interactions</p>
+          <div id="event-breakdown" class="activity-list"></div>
         </section>
 
-        <section class="analytics-card-large">
-          <h3 class="analytics-card-title">Top Viewed Pages</h3>
-          <div id="top-pages" class="analytics-list"></div>
+        <!-- Most Popular Pages -->
+        <section class="chart-section">
+          <h2 class="chart-title">Most Visited Pages</h2>
+          <p class="chart-desc">Pages people spend time on</p>
+          <div id="top-pages" class="activity-list"></div>
         </section>
 
-        <section class="analytics-card-large">
-          <h3 class="analytics-card-title">Most Clicked Elements</h3>
-          <div id="top-clicks" class="analytics-list"></div>
-        </section>
-
-        <section class="analytics-card-large analytics-full-width">
-          <h3 class="analytics-card-title">Recent Events Feed</h3>
-          <div id="recent-events" class="events-table-wrap"></div>
+        <!-- Most Active Buttons/Links -->
+        <section class="chart-section">
+          <h2 class="chart-title">Most Used Buttons & Links</h2>
+          <p class="chart-desc">What people click most</p>
+          <div id="top-clicks" class="activity-list"></div>
         </section>
       </div>
     </main>
@@ -184,25 +184,25 @@
     function renderDailyTrend(dailyRows) {
       const container = document.getElementById('daily-trend');
       if (!Array.isArray(dailyRows) || dailyRows.length === 0) {
-        container.innerHTML = '<p class="muted analytics-empty">No trend data yet.</p>';
+        container.innerHTML = '<p class="muted analytics-empty">No data yet. Come back when people start visiting!</p>';
         return;
       }
 
-      const maxEvents = Math.max(...dailyRows.map(d => Number(d.events) || 0), 1);
+      const maxVisitors = Math.max(...dailyRows.map(d => Number(d.unique_visitors) || 0), 1);
 
       container.innerHTML = dailyRows.map((row) => {
-        const events = Number(row.events) || 0;
         const visitors = Number(row.unique_visitors) || 0;
-        const widthPct = Math.max(4, Math.round((events / maxEvents) * 100));
-        const label = row.date || 'Unknown';
+        const events = Number(row.events) || 0;
+        const widthPct = Math.max(3, Math.round((visitors / maxVisitors) * 100));
+        const label = new Date(row.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
         return `
-          <div class="daily-row">
-            <div class="daily-row-top">
-              <span class="daily-date">${escapeHtml(label)}</span>
-              <span class="daily-meta">${formatNumber(visitors)} visitors, ${formatNumber(events)} events</span>
+          <div class="trend-day">
+            <div class="trend-bar-label">
+              <span class="trend-date">${label}</span>
+              <span class="trend-count">${formatNumber(visitors)} ${visitors === 1 ? 'person' : 'people'}</span>
             </div>
-            <div class="daily-bar-track"><div class="daily-bar" style="width:${widthPct}%"></div></div>
+            <div class="trend-bar-container"><div class="trend-bar" style="width:${widthPct}%"></div></div>
           </div>
         `;
       }).join('');
@@ -211,79 +211,64 @@
     function renderEventBreakdown(events) {
       const container = document.getElementById('event-breakdown');
       if (!Array.isArray(events) || events.length === 0) {
-        container.innerHTML = '<p class="muted analytics-empty">No event data yet.</p>';
+        container.innerHTML = '<p class="muted analytics-empty">No activity yet.</p>';
         return;
       }
 
+      const eventLabels = {
+        'page_view': '👁️ Page Views',
+        'click': '🖱️ Clicks',
+        'form_submit': '📝 Form Submissions'
+      };
+
       container.innerHTML = events.map((item, index) => {
-        const name = item.event_name || 'Unknown';
+        const name = item.event_name || 'Other';
+        const label = eventLabels[name] || name;
         const count = Number(item.count) || 0;
+
         return `
-          <div class="rank-item">
-            <span class="rank-index">${index + 1}</span>
-            <span class="rank-label">${escapeHtml(name)}</span>
-            <span class="rank-value">${formatNumber(count)} events</span>
+          <div class="activity-item">
+            <div class="activity-label">${label}</div>
+            <div class="activity-bar-wrapper">
+              <div class="activity-bar" style="width: ${Math.min(100, (count / events[0].count) * 100)}%"></div>
+            </div>
+            <div class="activity-count">${formatNumber(count)}</div>
           </div>
         `;
       }).join('');
     }
 
-    function renderRankedList(targetId, items, valueKey, labelKey, suffix = '') {
+    function renderRankedList(targetId, items, valueKey, labelKey) {
       const container = document.getElementById(targetId);
       if (!Array.isArray(items) || items.length === 0) {
         container.innerHTML = '<p class="muted analytics-empty">No data yet.</p>';
         return;
       }
 
-      container.innerHTML = items.slice(0, 12).map((item, index) => {
-        const label = item[labelKey] || 'Unknown';
+      const maxValue = Math.max(...items.map(i => Number(i[valueKey]) || 0), 1);
+
+      container.innerHTML = items.slice(0, 8).map((item, index) => {
+        let label = item[labelKey] || 'Unknown';
         const value = Number(item[valueKey]) || 0;
+
+        // Simplify page paths
+        if (label === '/') label = 'Home';
+        else if (label.startsWith('/')) label = label.slice(1).split('?')[0];
+
+        // Simplify button text
+        if (label.includes('::')) label = label.split('::')[1].trim();
+
         return `
-          <div class="rank-item">
-            <span class="rank-index">${index + 1}</span>
-            <span class="rank-label">${escapeHtml(label)}</span>
-            <span class="rank-value">${formatNumber(value)}${suffix}</span>
+          <div class="activity-item">
+            <div class="activity-rank">${index + 1}</div>
+            <div class="activity-label">${escapeHtml(label)}</div>
+            <div class="activity-bar-wrapper">
+              <div class="activity-bar" style="width: ${(value / maxValue) * 100}%"></div>
+            </div>
+            <div class="activity-count">${formatNumber(value)}</div>
           </div>
         `;
       }).join('');
-    }
-
-    function renderRecentEvents(events) {
-      const container = document.getElementById('recent-events');
-      if (!Array.isArray(events) || events.length === 0) {
-        container.innerHTML = '<p class="muted analytics-empty">No events captured yet.</p>';
-        return;
-      }
-
-      const rows = events.slice(0, 50).map((event) => {
-        const when = event.occurred_at ? new Date(event.occurred_at).toLocaleString() : '-';
-        const name = event.event_name || '-';
-        const page = event.page_path || '-';
-        const element = event.element || '-';
-
-        return `
-          <tr>
-            <td>${escapeHtml(when)}</td>
-            <td>${escapeHtml(name)}</td>
-            <td>${escapeHtml(page)}</td>
-            <td>${escapeHtml(element)}</td>
-          </tr>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <table class="events-table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Event</th>
-              <th>Page</th>
-              <th>Element</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      `;
     }
 
     async function loadAnalytics() {
@@ -298,7 +283,7 @@
         const headers = { 'x-admin-password': adminPassword };
         const [overviewRes, eventsRes] = await Promise.all([
           fetch(`/api/analytics/admin/overview?days=${encodeURIComponent(days)}`, { headers }),
-          fetch('/api/analytics/admin/events?limit=200', { headers }),
+          fetch('/api/analytics/admin/events?limit=100', { headers }),
         ]);
 
         if (!overviewRes.ok || !eventsRes.ok) {
@@ -311,11 +296,10 @@
         renderMetricCards(overviewData);
         renderDailyTrend(overviewData.daily || []);
         renderEventBreakdown(overviewData.event_breakdown || []);
-        renderRankedList('top-pages', overviewData.top_pages || [], 'views', 'page_path', ' views');
-        renderRankedList('top-clicks', overviewData.top_clicks || [], 'count', 'element', ' clicks');
-        renderRecentEvents(eventsData.events || []);
+        renderRankedList('top-pages', overviewData.top_pages || [], 'views', 'page_path');
+        renderRankedList('top-clicks', overviewData.top_clicks || [], 'count', 'element');
       } catch {
-        showAnalyticsError('Analytics is unavailable. Make sure the analytics_events table exists in Supabase.');
+        showAnalyticsError('Unable to load data. Make sure the analytics table exists in Supabase.');
       } finally {
         analyticsRefreshBtn.disabled = false;
         analyticsLoading = false;
