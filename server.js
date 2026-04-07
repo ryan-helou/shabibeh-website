@@ -50,6 +50,9 @@ app.use('/api/ideas', ideasRoutes);
 const settingsRoutes = require('./routes/settings')(supabase, ADMIN_PASSWORD);
 app.use('/api/settings', settingsRoutes);
 
+const analyticsRoutes = require('./routes/analytics')(supabase, ADMIN_PASSWORD);
+app.use('/api/analytics', analyticsRoutes);
+
 // ----- Page Routes -----
 app.get('/questions', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'questions', 'index.html'));

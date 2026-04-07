@@ -26,12 +26,47 @@ CREATE TABLE questions (
 );
 ```
 
+4. Create the `analytics_events` table for visitor/click tracking:
+```sql
+CREATE TABLE analytics_events (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  event_name TEXT NOT NULL,
+  event_type TEXT,
+  page_path TEXT,
+  element TEXT,
+  visitor_id TEXT,
+  session_id TEXT,
+  metadata JSONB,
+  ip_address TEXT,
+  user_agent TEXT,
+  referrer TEXT,
+  occurred_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX analytics_events_occurred_at_idx ON analytics_events (occurred_at DESC);
+CREATE INDEX analytics_events_event_name_idx ON analytics_events (event_name);
+CREATE INDEX analytics_events_visitor_id_idx ON analytics_events (visitor_id);
+```
+
 4. Start the server:
 ```bash
 npm start
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
+
+## Analytics
+
+The frontend now sends first-party analytics events automatically:
+- `page_view` on every page load
+- `click` for links/buttons/interactive elements
+- `form_submit` for all form submissions
+
+Events are stored in `analytics_events` via `POST /api/analytics/event`.
+
+Admin endpoints (require `x-admin-password` header):
+- `GET /api/analytics/admin/overview?days=30`
+- `GET /api/analytics/admin/events?limit=100`
 
 ## Admin Access
 
