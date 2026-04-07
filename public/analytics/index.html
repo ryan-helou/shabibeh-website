@@ -27,8 +27,8 @@
     <main id="dashboard-view" class="hidden">
       <!-- Time Range Selector -->
       <div class="analytics-top-bar">
-        <div>
-          <p class="analytics-top-label">Show data from:</p>
+        <label class="analytics-label-group">
+          <span class="analytics-label-text">Show data from:</span>
           <select id="analytics-days" class="analytics-select">
             <option value="7">Last week</option>
             <option value="14">Last 2 weeks</option>
@@ -36,7 +36,7 @@
             <option value="60">Last 2 months</option>
             <option value="90">Last 3 months</option>
           </select>
-        </div>
+        </label>
         <button id="analytics-refresh-btn" class="secondary-btn" type="button">📄 Refresh</button>
       </div>
 
