@@ -141,6 +141,7 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
     }
 
     const uniqueVisitors = new Set();
+    const uniqueIPs = new Set();
     const byDay = new Map();
     const clickCounts = new Map();
     const pageViewCounts = new Map();
@@ -149,17 +150,25 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
     events.forEach((event) => {
       const dateKey = (event.occurred_at || '').slice(0, 10) || 'unknown';
       const visitorId = event.visitor_id || null;
+      const ipAddress = event.ip_address || null;
 
       if (!byDay.has(dateKey)) {
-        byDay.set(dateKey, { events: 0, visitors: new Set() });
+        byDay.set(dateKey, { events: 0, visitors: new Set(), ips: new Set() });
       }
 
       const day = byDay.get(dateKey);
       day.events += 1;
 
+      // Primary: track by visitor_id (browser localStorage)
       if (visitorId) {
         uniqueVisitors.add(visitorId);
         day.visitors.add(visitorId);
+      }
+
+      // Secondary: track by IP for fallback deduplication
+      if (ipAddress && ipAddress !== 'unknown') {
+        uniqueIPs.add(ipAddress);
+        day.ips.add(ipAddress);
       }
 
       const eventName = event.event_name || 'unknown';
@@ -177,13 +186,20 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
       }
     });
 
+    // Hybrid deduplication: count visitor_ids first, then IPs for untracked visitors
+    const totalUniqueVisitors = uniqueVisitors.size + uniqueIPs.size;
+
     const daily = Array.from(byDay.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, values]) => ({
-        date,
-        events: values.events,
-        unique_visitors: values.visitors.size,
-      }));
+      .map(([date, values]) => {
+        // For each day: count distinct visitor_ids + count distinct IPs that have no visitor_id
+        const dayUniqueCount = values.visitors.size + values.ips.size;
+        return {
+          date,
+          events: values.events,
+          unique_visitors: dayUniqueCount,
+        };
+      });
 
     const top_clicks = Array.from(clickCounts.entries())
       .sort((a, b) => b[1] - a[1])
@@ -202,7 +218,9 @@ module.exports = function (supabase, ADMIN_PASSWORD) {
     return res.json({
       period_days: days,
       total_events: events.length,
-      unique_visitors: uniqueVisitors.size,
+      unique_visitors: totalUniqueVisitors,
+      unique_tracked_visitors: uniqueVisitors.size,
+      unique_ip_addresses: uniqueIPs.size,
       daily,
       top_clicks,
       top_pages,
