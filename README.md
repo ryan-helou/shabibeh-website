@@ -1,6 +1,8 @@
-# AEBC Shabibeh
+# ⛪ AEBC Shabibeh
 
 *The website for AEBC's shabibeh — the church youth group ("shabibeh" is Arabic for youth).*
+
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white) ![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white) ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white)
 
 A small hub that gathers the things a youth group actually needs between and during meetings: a way to ask questions, an archive of past sermons to listen to and read, and a live channel for questions while a talk is happening. The home page is four cards — Questions, Recordings, Sermon Slides, and Live Q&A — and each can be switched off site-wide from the admin panel when it isn't in use.
 
