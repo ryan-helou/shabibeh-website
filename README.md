@@ -6,6 +6,8 @@
 
 <a href="https://anon-aebc.vercel.app"><img alt="Open anon-aebc.vercel.app" src="https://img.shields.io/badge/Open-anon--aebc.vercel.app-24292f?style=for-the-badge"></a>
 
+<!-- facts --><img alt="Questions: anonymous allowed" src="https://img.shields.io/badge/Questions-anonymous_allowed-24292f?style=for-the-badge"> <img alt="Live Q&A: with upvotes" src="https://img.shields.io/badge/Live_Q%26A-with_upvotes-24292f?style=for-the-badge"> <img alt="Accounts: none needed" src="https://img.shields.io/badge/Accounts-none_needed-24292f?style=for-the-badge">
+
 </div>
 
 <br>
